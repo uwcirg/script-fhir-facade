@@ -8,3 +8,5 @@ services:
       - ./:/opt/app
     environment:
       SCRIPT_CLIENT_MUTUALLY_DEFINED: ${SCRIPT_CLIENT_MUTUALLY_DEFINED}
+    ports:
+      - 8000:8000

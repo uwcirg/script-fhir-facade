@@ -1,5 +1,4 @@
 from requests import Session
-from lxml import etree as ET
 
 from client.client_106 import RxRequest, session_data
 from client.config import DefaultConfig as client_config

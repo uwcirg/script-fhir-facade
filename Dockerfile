@@ -2,8 +2,10 @@ FROM python:3.7
 
 WORKDIR /opt/app
 
-RUN pip install requests lxml
+RUN pip install requests lxml fastapi uvicorn
 
 COPY . .
 
-CMD python3 script_facade/cli.py
+EXPOSE 8000
+
+CMD uvicorn --host 0.0.0.0 script_facade.main:app --reload
