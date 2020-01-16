@@ -2,7 +2,7 @@ FROM python:3.7
 
 WORKDIR /opt/app
 
-RUN pip install requests
+RUN pip install requests lxml
 
 COPY . .
 
