@@ -4,6 +4,7 @@ from lxml import etree as ET
 class MedicationOrder(object):
 
     def __init__(self, med):
+        # todo: support medicationReference and medicationCodeableConcept
         self.medication = med
 
         self.date_written = None
@@ -22,7 +23,22 @@ class MedicationOrder(object):
         med_order = cls(med_cc)
         return med_order
     def __str__(self):
-        return self.medication['text']
+        return str(self.as_fhir())
+
+    def as_fhir(self):
+        fhir_json = {
+            'dateWritten': self.date_written,
+            'dateEnded': self.date_ended,
+            'medicationCodeableConcept': {
+                'coding': [{
+                    'system': '',
+                    'code': '',
+                    'display': self.medication['text'],
+                }],
+                'text': self.medication['text'],
+            }
+        }
+        return fhir_json
 
 
 def parse_rx_history_response(xml_string):
