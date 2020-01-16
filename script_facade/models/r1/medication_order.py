@@ -3,11 +3,11 @@ from lxml import etree as ET
 
 class MedicationOrder(object):
 
-    def __init__(self, med):
+    def __init__(self, med, date_written=None, date_ended=None):
         # todo: support medicationReference and medicationCodeableConcept
         self.medication = med
 
-        self.date_written = None
+        self.date_written = date_written
         self.date_ended = None
 
 
@@ -16,11 +16,25 @@ class MedicationOrder(object):
 
         drug_description = xml_element.xpath('.//*[local-name()="DrugDescription"]')[0].text
 
+        drug_coded = xml_element.xpath('.//*[local-name()="DrugCoded"]')[0]
+        product_code = drug_coded.xpath('.//*[local-name()="ProductCode"]')[0].text
+        product_code_qualifier = drug_coded.xpath('.//*[local-name()="ProductCodeQualifier"]')[0].text
+        #strength = drug_coded.xpath('.//*[local-name()="Strength"]')[0].text
+
+        date_written = xml_element.xpath('.//*[local-name()="WrittenDate"]//*[local-name()="Date"]')[0].text
+
         med_cc = {
-            'text': drug_description,
+            'medicationCodeableConcept': {
+                'coding': [{
+                    'system': product_code_qualifier,
+                    'code': product_code,
+                    'display': drug_description,
+                }],
+                'text': drug_description,
+            }
         }
 
-        med_order = cls(med_cc)
+        med_order = cls(med_cc, date_written=date_written, date_ended=None)
         return med_order
     def __str__(self):
         return str(self.as_fhir())
@@ -29,16 +43,10 @@ class MedicationOrder(object):
         fhir_json = {
             'dateWritten': self.date_written,
             'dateEnded': self.date_ended,
-            'medicationCodeableConcept': {
-                'coding': [{
-                    'system': '',
-                    'code': '',
-                    'display': self.medication['text'],
-                }],
-                'text': self.medication['text'],
-            }
+            'medicationCodeableConcept': self.medication,
         }
-        return fhir_json
+        filtered_fhir_json = {k:v for k, v in fhir_json.items() if v}
+        return filtered_fhir_json
 
 
 def parse_rx_history_response(xml_string):
