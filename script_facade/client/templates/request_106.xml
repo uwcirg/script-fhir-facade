@@ -23,16 +23,17 @@
         <RxHistoryRequest>
             <Prescriber>
                 <Identification>
-                    <DEANumber>{{DEA}}</DEANumber>
-                    <NPI>{{NPI}}</NPI>
-                    <MutuallyDefined>{{MutuallyDefined}}</MutuallyDefined>
+                    {%if DEA %}<DEANumber>{{DEA}}</DEANumber>{% endif %}
+                    {% if NPI %}<NPI>{{NPI}}</NPI>{% endif %}
+                    {% if MutuallyDefined %}<MutuallyDefined>{{MutuallyDefined}}</MutuallyDefined>{% endif %}
                 </Identification>
-                <Specialty>{{Specialty}}</Specialty>
-                <ClinicName>{{ClinicName}}</ClinicName>
+                {% if Specialty %}<Specialty>{{Specialty}}</Specialty>{% endif %}
+                {% if ClinicName %}<ClinicName>{{ClinicName}}</ClinicName>{% endif %}
                 <Name>
                     <LastName>{{PrescriberLName}}</LastName>
                     <FirstName>{{PrescriberFName}}</FirstName>
                 </Name>
+                {% if PrescriberAddress1 and PrescriberAddress2 and PrescriberCity and PrescriberState and PrescriberZip and PrescriberPlaceLoc %}
                 <Address>
                     <AddressLine1>{{PrescriberAddress1}}</AddressLine1>
                     <AddressLine2>{{PrescriberAddress2}}</AddressLine2>
@@ -41,12 +42,15 @@
                     <ZipCode>{{PrescriberZip}}</ZipCode>
                     <PlaceLocationQualifier>{{PrescriberPlaceLoc}}</PlaceLocationQualifier>
                 </Address>
+                {% endif %}
+                {% if ComNumber and ComQualifier %}
                 <CommunicationNumbers>
                     <Communication>
                         <Number>{{ComNumber}}</Number>
                         <Qualifier>{{ComQualifier}}</Qualifier>
                     </Communication>
                 </CommunicationNumbers>
+                {% endif %}
             </Prescriber>
             <Patient>
                 <Name>
