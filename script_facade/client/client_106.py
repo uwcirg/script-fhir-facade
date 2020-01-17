@@ -31,13 +31,7 @@ class RxRequest():
         return prepped
 
     def request_body(self):
-        xml_template_path = os.path.join(
-            client_config.root_path(),
-            "templates/request_106.xml",
-        )
 
-        with open(xml_template_path, 'r') as xml_template:
-            xml_content = xml_template.read()
 
         template_vars = {
             'FromQualifier': client_config.SCRIPT_CLIENT_QUALIFIER,
@@ -65,6 +59,8 @@ class RxRequest():
             'BenExpirationDate': '2019-12-11',
             'BenConsent': 'Y',
         }
+        template_env = client_config.configure_templates()
+        template = template_env.get_template('request_106.xml')
+        xml_content = template.render(**template_vars)
 
-        xml_content = xml_content.format(**template_vars)
         return xml_content

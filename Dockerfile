@@ -2,7 +2,7 @@ FROM python:3.7
 
 WORKDIR /opt/app
 
-RUN pip install requests lxml fastapi uvicorn
+RUN pip install requests lxml fastapi uvicorn jinja2
 
 COPY . .
 

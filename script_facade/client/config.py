@@ -1,4 +1,5 @@
 import os
+from jinja2 import Environment, PackageLoader, select_autoescape
 
 class DefaultConfig(object):
     # SOAP endpoint URL
@@ -18,3 +19,11 @@ class DefaultConfig(object):
     @classmethod
     def root_path(cls):
         return os.path.dirname(os.path.realpath(__file__))
+
+    @classmethod
+    def configure_templates(cls):
+        env = Environment(
+            loader=PackageLoader('script_facade.client', 'templates'),
+            autoescape=select_autoescape(['xml'])
+        )
+        return env
