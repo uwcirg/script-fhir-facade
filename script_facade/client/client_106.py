@@ -19,18 +19,18 @@ class RxRequest():
     def __init__(self, url):
         self.url = url
 
-    def build_request(self):
+    def build_request(self, patient_fname, patient_lname, patient_dob):
         req = Request(
             method='GET',
             url=self.url,
-            data=self.request_body(),
+            data=self.request_body(patient_fname, patient_lname, patient_dob),
             headers={'Content-Type': 'application/xml'},
         )
         prepped = req.prepare()
 
         return prepped
 
-    def request_body(self):
+    def request_body(self, patient_fname, patient_lname, patient_dob):
 
 
         template_vars = {
@@ -53,10 +53,11 @@ class RxRequest():
             #'ComNumber': '1234567890',
             #'ComQualifier': 'TE',
 
-            'PatientLName': 'Skywalker',
-            'PatientFName': 'Luke',
+            #'PatientLName': 'Skywalker',
+            'PatientLName': patient_lname,
+            'PatientFName': patient_fname,
             'PatientGender': 'M',
-            'PatientDOB': '1977-01-12',
+            'PatientDOB': patient_dob,
             'BenEffectiveDate': '2012-01-01',
             'BenExpirationDate': '2019-12-11',
             'BenConsent': 'Y',
