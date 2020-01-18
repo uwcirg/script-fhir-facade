@@ -1,6 +1,7 @@
 # https://www.hl7.org/fhir/terminologies-systems.html
 # todo: convert from from National Drug Code to RxNorm
 # http://www.nlm.nih.gov/research/umls/rxnorm
+# https://rxnav.nlm.nih.gov/REST/rxcui.json?idtype=NDC&id=NDC_ID
 drug_code_system_map = {
     # todo: interpolate dashes as necessary for NDC
     'ND': 'http://hl7.org/fhir/sid/ndc'
