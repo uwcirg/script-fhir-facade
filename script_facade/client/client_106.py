@@ -1,8 +1,10 @@
 """Client for NCPDP SCRIPT Standard version 10.6"""
-
 import os
+from lxml import etree as ET
+from requests import Request, Session
 
-from requests import Request
+from script_facade.models.r1.bundle import as_bundle
+from script_facade.models.r1.medication_order import MedicationOrder
 from .config import DefaultConfig as client_config
 
 # data to confgure Session
@@ -15,7 +17,7 @@ session_data = {
     ),
 }
 
-class RxRequest():
+class RxRequest(object):
     def __init__(self, url):
         self.url = url
 
@@ -67,3 +69,35 @@ class RxRequest():
         xml_content = template.render(**template_vars)
 
         return xml_content
+
+
+def parse_rx_history_response(xml_string):
+    # LXML infers encoding from XML metadata
+    root = ET.fromstring(xml_string.encode('utf-8'))
+
+    # todo: use SCRIPT XML namespace correctly
+    meds_elements = root.xpath('//*[local-name()="MedicationDispensed"]')
+
+    meds = []
+    for med_element in meds_elements:
+        meds.append(MedicationOrder.from_xml(med_element))
+
+    meds = [m.as_fhir() for m in meds]
+    return as_bundle(meds, bundle_type='searchset')
+
+
+def rx_history_query(patient_fname, patient_lname, patient_dob):
+    api_endpoint = client_config.SCRIPT_ENDPOINT_URL
+    request_builder = RxRequest(url=api_endpoint)
+    request = request_builder.build_request(patient_fname, patient_lname, patient_dob)
+    s = Session()
+    response = s.send(request, **session_data)
+
+    if not response.ok:
+        print(response.content)
+    response.raise_for_status()
+
+    xml_body = response.text
+
+    meds = parse_rx_history_response(xml_body)
+    return meds

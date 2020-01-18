@@ -1,5 +1,10 @@
-from lxml import etree as ET
-
+# https://www.hl7.org/fhir/terminologies-systems.html
+# todo: convert from from National Drug Code to RxNorm
+# http://www.nlm.nih.gov/research/umls/rxnorm
+drug_code_system_map = {
+    # todo: interpolate dashes as necessary for NDC
+    'ND': 'http://hl7.org/fhir/sid/ndc'
+}
 
 class MedicationOrder(object):
 
@@ -19,6 +24,10 @@ class MedicationOrder(object):
         drug_coded = xml_element.xpath('.//*[local-name()="DrugCoded"]')[0]
         product_code = drug_coded.xpath('.//*[local-name()="ProductCode"]')[0].text
         product_code_qualifier = drug_coded.xpath('.//*[local-name()="ProductCodeQualifier"]')[0].text
+
+        # attempt code system lookup
+        product_code_qualifier = drug_code_system_map.get(product_code_qualifier, product_code_qualifier)
+
         #strength = drug_coded.xpath('.//*[local-name()="Strength"]')[0].text
 
         date_written = xml_element.xpath('.//*[local-name()="WrittenDate"]//*[local-name()="Date"]')[0].text
@@ -41,23 +50,10 @@ class MedicationOrder(object):
 
     def as_fhir(self):
         fhir_json = {
+            'resourceType': 'MedicationOrder',
             'dateWritten': self.date_written,
             'dateEnded': self.date_ended,
             'medicationCodeableConcept': self.medication,
         }
         filtered_fhir_json = {k:v for k, v in fhir_json.items() if v}
         return filtered_fhir_json
-
-
-def parse_rx_history_response(xml_string):
-    # LXML infers encoding from XML metadata
-    root = ET.fromstring(xml_string.encode('utf-8'))
-
-    # todo: use SCRIPT XML namespace correctly
-    meds_elements = root.xpath('//*[local-name()="MedicationDispensed"]')
-
-    meds = []
-    for med_element in meds_elements:
-        meds.append(MedicationOrder.from_xml(med_element))
-
-    return meds
