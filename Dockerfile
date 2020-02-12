@@ -6,6 +6,8 @@ RUN pip install requests lxml fastapi uvicorn jinja2
 
 COPY . .
 
-EXPOSE 8000
+ENV PORT=8008
 
-CMD uvicorn --host 0.0.0.0 script_facade.main:app --reload
+EXPOSE "${PORT}"
+
+CMD uvicorn --host 0.0.0.0 --port "${PORT}" script_facade.main:app --reload

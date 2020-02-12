@@ -6,7 +6,9 @@ services:
       context: .
     volumes:
       - ./:/opt/app
-    environment:
-      SCRIPT_CLIENT_MUTUALLY_DEFINED: ${SCRIPT_CLIENT_MUTUALLY_DEFINED}
     ports:
-      - 8000:8000
+      # map container port 8008 to port 8001 on host
+      # access via localhost:8001
+      - ${EXTERNAL_PORT:-8001}:${PORT:-8008}
+    env_file:
+      - script.env
