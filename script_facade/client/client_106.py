@@ -23,7 +23,7 @@ class RxRequest(object):
 
     def build_request(self, patient_fname, patient_lname, patient_dob):
         req = Request(
-            method='GET',
+            method='POST',
             url=self.url,
             data=self.request_body(patient_fname, patient_lname, patient_dob),
             headers={'Content-Type': 'application/xml'},
