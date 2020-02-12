@@ -17,5 +17,5 @@ def medication_order(patient=None, patient_fname=None, patient_dob=None):
     patient_lname = 'Skywalker'
     patient_dob = '1977-01-12'
 
-    bundle = rx_history_query(patient_fname, patient_lname, patient_dob)
+    bundle = rx_history_query(patient_fname=patient_fname, patient_lname=patient_lname, patient_dob=patient_dob)
     return bundle
