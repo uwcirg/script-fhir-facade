@@ -13,9 +13,9 @@ app = FastAPI()
 @app.get("/v/r2/fhir/MedicationOrder")
 def medication_order(patient=None, patient_fname=None, patient_dob=None):
 
-    patient_fname = 'Luke'
-    patient_lname = 'Skywalker'
-    patient_dob = '1977-01-12'
+    patient_fname = 'Terry'
+    patient_lname = 'Jackson'
+    patient_dob = '7/1/1968'
 
     bundle = rx_history_query(patient_fname=patient_fname, patient_lname=patient_lname, patient_dob=patient_dob)
     return bundle
