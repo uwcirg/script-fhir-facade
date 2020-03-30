@@ -72,6 +72,8 @@ class RxRequest(object):
 
 
 def parse_rx_history_response(xml_string):
+    # fixup missing colon in XML NS declaration
+    xml_string = xml_string.replace('xmlns="http://www.ncpdp.org/schema/SCRIPT"', 'xmlns:SCRIPT="http://www.ncpdp.org/schema/SCRIPT"')
     # LXML infers encoding from XML metadata
     root = ET.fromstring(xml_string.encode('utf-8'))
 
