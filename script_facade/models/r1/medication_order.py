@@ -48,7 +48,7 @@ class MedicationOrder(object):
         }
 
         quantity_dispensed = xml_element.xpath('.//*[local-name()="Quantity"]//*[local-name()="Value"]')[0].text
-        dispense_request = None
+        dispense_request = {}
         if quantity_dispensed:
             dispense_request = {
                 'quantity': {
@@ -56,6 +56,26 @@ class MedicationOrder(object):
                 }
             }
 
+        # todo: move these extensions to a separate MedicationDispense resource
+        pharmacy_name = xml_element.xpath('.//*[local-name()="Pharmacy"]//*[local-name()="StoreName"]')[0].text
+        if pharmacy_name:
+            dispense_request.setdefault('extension', [])
+            dispense_request['extension'].append(
+                {
+                    'url': 'http://cosri.org/fhir/pharmacy_name',
+                    'valueString': pharmacy_name,
+                }
+            )
+
+        last_fill = xml_element.xpath('.//*[local-name()="LastFillDate"]//*[local-name()="Date"]')[0].text
+        if last_fill:
+            dispense_request.setdefault('extension', [])
+            dispense_request['extension'].append(
+                {
+                    'url': 'http://cosri.org/fhir/last_fill',
+                    'valueDate': last_fill,
+                }
+            )
 
         prescriber_fname = xml_element.xpath('.//*[local-name()="Prescriber"]//*[local-name()="Name"]//*[local-name()="FirstName"]')[0].text
         prescriber_lname = xml_element.xpath('.//*[local-name()="Prescriber"]//*[local-name()="Name"]//*[local-name()="LastName"]')[0].text
