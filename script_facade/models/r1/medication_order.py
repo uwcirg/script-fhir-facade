@@ -9,10 +9,11 @@ drug_code_system_map = {
 
 class MedicationOrder(object):
 
-    def __init__(self, med, dispense_request=None, date_written=None, date_ended=None):
+    def __init__(self, med, dispense_request=None, prescriber=None, date_written=None, date_ended=None):
         # todo: support medicationReference and medicationCodeableConcept
         self.medication = med
         self.dispense_request = dispense_request
+        self.prescriber = prescriber
 
         self.date_written = date_written
         self.date_ended = None
@@ -55,7 +56,16 @@ class MedicationOrder(object):
                 }
             }
 
-        med_order = cls(med_cc, dispense_request, date_written=date_written, date_ended=None)
+
+        prescriber_fname = xml_element.xpath('.//*[local-name()="Prescriber"]//*[local-name()="Name"]//*[local-name()="FirstName"]')[0].text
+        prescriber_lname = xml_element.xpath('.//*[local-name()="Prescriber"]//*[local-name()="Name"]//*[local-name()="LastName"]')[0].text
+
+        # use contained resource, or save for other resource relationships?
+        prescriber = {
+            "display": " ".join((prescriber_fname, prescriber_lname))
+        }
+
+        med_order = cls(med_cc, dispense_request=dispense_request, prescriber=prescriber, date_written=date_written, date_ended=None)
         return med_order
     def __str__(self):
         return str(self.as_fhir())
@@ -67,6 +77,7 @@ class MedicationOrder(object):
             'dateEnded': self.date_ended,
             'medicationCodeableConcept': self.medication,
             'dispenseRequest': self.dispense_request,
+            'prescriber': self.prescriber,
         }
         filtered_fhir_json = {k:v for k, v in fhir_json.items() if v}
         return filtered_fhir_json
