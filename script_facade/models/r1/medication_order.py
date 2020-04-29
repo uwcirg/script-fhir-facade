@@ -9,9 +9,10 @@ drug_code_system_map = {
 
 class MedicationOrder(object):
 
-    def __init__(self, med, date_written=None, date_ended=None):
+    def __init__(self, med, dispense_request=None, date_written=None, date_ended=None):
         # todo: support medicationReference and medicationCodeableConcept
         self.medication = med
+        self.dispense_request = dispense_request
 
         self.date_written = date_written
         self.date_ended = None
@@ -33,6 +34,7 @@ class MedicationOrder(object):
 
         date_written = xml_element.xpath('.//*[local-name()="WrittenDate"]//*[local-name()="Date"]')[0].text
 
+
         med_cc = {
             'medicationCodeableConcept': {
                 'coding': [{
@@ -44,7 +46,16 @@ class MedicationOrder(object):
             }
         }
 
-        med_order = cls(med_cc, date_written=date_written, date_ended=None)
+        quantity_dispensed = xml_element.xpath('.//*[local-name()="Quantity"]//*[local-name()="Value"]')[0].text
+        dispense_request = None
+        if quantity_dispensed:
+            dispense_request = {
+                'quantity': {
+                    'value': int(quantity_dispensed)
+                }
+            }
+
+        med_order = cls(med_cc, dispense_request, date_written=date_written, date_ended=None)
         return med_order
     def __str__(self):
         return str(self.as_fhir())
@@ -55,6 +66,7 @@ class MedicationOrder(object):
             'dateWritten': self.date_written,
             'dateEnded': self.date_ended,
             'medicationCodeableConcept': self.medication,
+            'dispenseRequest': self.dispense_request,
         }
         filtered_fhir_json = {k:v for k, v in fhir_json.items() if v}
         return filtered_fhir_json
