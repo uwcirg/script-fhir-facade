@@ -21,20 +21,20 @@ class MedicationOrder(object):
 
     @classmethod
     def from_xml(cls, xml_element):
+        # todo: separate finding/extract into separate steps
+        drug_description = xml_element.xpath('.//DrugDescription/text()')[0]
 
-        drug_description = xml_element.xpath('.//*[local-name()="DrugDescription"]')[0].text
+        drug_coded = xml_element.xpath('.//DrugCoded')[0]
+        product_code = drug_coded.xpath('.//ProductCode/text()')[0]
+        product_code_qualifier = drug_coded.xpath('.//ProductCodeQualifier/text()')[0]
 
-        drug_coded = xml_element.xpath('.//*[local-name()="DrugCoded"]')[0]
-        product_code = drug_coded.xpath('.//*[local-name()="ProductCode"]')[0].text
-        product_code_qualifier = drug_coded.xpath('.//*[local-name()="ProductCodeQualifier"]')[0].text
 
         # attempt code system lookup
         product_code_qualifier = drug_code_system_map.get(product_code_qualifier, product_code_qualifier)
 
         #strength = drug_coded.xpath('.//*[local-name()="Strength"]')[0].text
 
-        date_written = xml_element.xpath('.//*[local-name()="WrittenDate"]//*[local-name()="Date"]')[0].text
-
+        date_written = xml_element.xpath('.//WrittenDate/Date/text()')[0]
 
         med_cc = {
             'medicationCodeableConcept': {
@@ -47,7 +47,7 @@ class MedicationOrder(object):
             }
         }
 
-        quantity_dispensed = xml_element.xpath('.//*[local-name()="Quantity"]//*[local-name()="Value"]')[0].text
+        quantity_dispensed = xml_element.xpath('.//Quantity/Value/text()')[0]
         dispense_request = {}
         if quantity_dispensed:
             dispense_request = {
@@ -57,7 +57,7 @@ class MedicationOrder(object):
             }
 
         # todo: move these extensions to a separate MedicationDispense resource
-        pharmacy_name = xml_element.xpath('.//*[local-name()="Pharmacy"]//*[local-name()="StoreName"]')[0].text
+        pharmacy_name = xml_element.xpath('.//Pharmacy/StoreName/text()')[0]
         if pharmacy_name:
             dispense_request.setdefault('extension', [])
             dispense_request['extension'].append(
@@ -67,7 +67,7 @@ class MedicationOrder(object):
                 }
             )
 
-        last_fill = xml_element.xpath('.//*[local-name()="LastFillDate"]//*[local-name()="Date"]')[0].text
+        last_fill = xml_element.xpath('.//LastFillDate/Date/text()')[0]
         if last_fill:
             dispense_request.setdefault('extension', [])
             dispense_request['extension'].append(
@@ -77,8 +77,9 @@ class MedicationOrder(object):
                 }
             )
 
-        prescriber_fname = xml_element.xpath('.//*[local-name()="Prescriber"]//*[local-name()="Name"]//*[local-name()="FirstName"]')[0].text
-        prescriber_lname = xml_element.xpath('.//*[local-name()="Prescriber"]//*[local-name()="Name"]//*[local-name()="LastName"]')[0].text
+
+        prescriber_fname = xml_element.xpath('.//Prescriber/Name/FirstName/text()')[0]
+        prescriber_lname = xml_element.xpath('.//Prescriber/Name/LastName/text()')[0]
 
         # use contained resource, or save for other resource relationships?
         prescriber = {
