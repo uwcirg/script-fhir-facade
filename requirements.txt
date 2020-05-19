@@ -1,0 +1,5 @@
+# concrete dependencies
+# todo: move abstract dependencies to setup.cfg
+flask
+requests
+lxml
