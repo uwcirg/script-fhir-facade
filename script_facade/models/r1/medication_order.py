@@ -9,18 +9,22 @@ drug_code_system_map = {
 
 class MedicationOrder(object):
 
-    def __init__(self, med, dispense_request=None, prescriber=None, date_written=None, date_ended=None):
+    #def __init__(self, med, dispense_request=None, prescriber=None, date_written=None, date_ended=None):
+    def __init__(self):
         # todo: support medicationReference and medicationCodeableConcept
-        self.medication = med
-        self.dispense_request = dispense_request
-        self.prescriber = prescriber
+        #self.medication = med
+        #self.dispense_request = dispense_request
+        #self.prescriber = prescriber
 
-        self.date_written = date_written
-        self.date_ended = None
+        #self.date_written = date_written
+        #self.date_ended = None
 
 
     @classmethod
     def from_xml(cls, xml_element):
+
+        med_order = cls()
+
         # todo: separate finding/extract into separate steps
         drug_description = xml_element.xpath('.//DrugDescription/text()')[0]
 
@@ -46,6 +50,8 @@ class MedicationOrder(object):
                 'text': drug_description,
             }
         }
+
+        self.medication = med_cc
 
         quantity_dispensed = xml_element.xpath('.//Quantity/Value/text()')[0]
         dispense_request = {}
@@ -86,7 +92,8 @@ class MedicationOrder(object):
             "display": " ".join((prescriber_fname, prescriber_lname))
         }
 
-        med_order = cls(med_cc, dispense_request=dispense_request, prescriber=prescriber, date_written=date_written, date_ended=None)
+        med_order = cls()
+        # med_cc, dispense_request=dispense_request, prescriber=prescriber, date_written=date_written, date_ended=None
         return med_order
     def __str__(self):
         return str(self.as_fhir())
