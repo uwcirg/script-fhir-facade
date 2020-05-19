@@ -1,3 +1,5 @@
+from flask import Blueprint
+
 from script_facade.client.client_106 import rx_history_query
 
 

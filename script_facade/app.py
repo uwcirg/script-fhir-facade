@@ -1,7 +1,6 @@
 from flask import Flask
 
 from script_facade import api
-#from sof_wrapper.extensions import oauth
 
 
 def create_app(testing=False, cli=False):
