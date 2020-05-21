@@ -2,12 +2,17 @@ FROM python:3.7
 
 WORKDIR /opt/app
 
-RUN pip install requests lxml fastapi uvicorn jinja2
+# cache hack; very fragile
+COPY requirements.txt ./
+RUN pip install --requirement requirements.txt
 
 COPY . .
 
-ENV PORT=8008
+
+ENV FLASK_APP=script_facade/app:create_app() \
+    FLASK_ENV=development \
+    PORT=8008
 
 EXPOSE "${PORT}"
 
-CMD uvicorn --host 0.0.0.0 --port "${PORT}" script_facade.main:app --reload
+CMD flask run --host 0.0.0.0 --port "${PORT}"
