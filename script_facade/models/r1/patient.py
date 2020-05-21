@@ -31,7 +31,8 @@ class Patient(object):
             './/*[local-name()="Gender"]/text()',
         )
         if gender:
-            patient.gender = gender[0]
+            gender_map = {'m': 'male', 'f': 'female'}
+            patient.gender = gender_map[gender[0].lower()]
 
         birthdate = xml_element.xpath(
             './/*[local-name()="DateOfBirth"]/*[local-name()="Date"]/text()',
