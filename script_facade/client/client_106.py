@@ -121,10 +121,10 @@ def rx_history_query(patient_fname, patient_lname, patient_dob):
     return meds
 
 
-def patient_lookup_query(patient_fname, patient_lname, patient_dob):
+def patient_lookup_query(first_name, last_name, date_of_birth):
     api_endpoint = client_config.SCRIPT_ENDPOINT_URL
     request_builder = RxRequest(url=api_endpoint)
-    request = request_builder.build_request(patient_fname, patient_lname, patient_dob)
+    request = request_builder.build_request(first_name, last_name, date_of_birth)
     s = Session()
     response = s.send(request, **session_data)
 
