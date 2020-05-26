@@ -5,6 +5,7 @@ from requests import Request, Session
 
 from script_facade.models.r1.bundle import as_bundle
 from script_facade.models.r1.medication_order import MedicationOrder
+from script_facade.models.r1.patient import Patient
 from .config import DefaultConfig as client_config
 
 # data to confgure Session
@@ -88,6 +89,21 @@ def parse_rx_history_response(xml_string):
     return as_bundle(meds, bundle_type='searchset')
 
 
+def parse_patient_lookup_query(xml_string):
+    # LXML infers encoding from XML metadata
+    root = ET.fromstring(xml_string.encode('utf-8'))
+
+    # todo: use SCRIPT XML namespace correctly
+    patient_elements = root.xpath('//*[local-name()="Patient"]')
+
+    patients = []
+    for patient_element in patient_elements:
+        patients.append(Patient.from_xml(patient_element))
+
+    patients = [p.as_fhir() for p in patients]
+    return as_bundle(patients, bundle_type='searchset')
+
+
 def rx_history_query(patient_fname, patient_lname, patient_dob):
     api_endpoint = client_config.SCRIPT_ENDPOINT_URL
     request_builder = RxRequest(url=api_endpoint)
@@ -103,3 +119,20 @@ def rx_history_query(patient_fname, patient_lname, patient_dob):
 
     meds = parse_rx_history_response(xml_body)
     return meds
+
+
+def patient_lookup_query(first_name, last_name, date_of_birth):
+    api_endpoint = client_config.SCRIPT_ENDPOINT_URL
+    request_builder = RxRequest(url=api_endpoint)
+    request = request_builder.build_request(first_name, last_name, date_of_birth)
+    s = Session()
+    response = s.send(request, **session_data)
+
+    if not response.ok:
+        print(response.content)
+    response.raise_for_status()
+
+    xml_body = response.text
+
+    patient_bundle = parse_patient_lookup_query(xml_body)
+    return patient_bundle
