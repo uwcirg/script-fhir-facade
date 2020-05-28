@@ -17,7 +17,10 @@ def medication_order():
     patient_dob = '1977-01-12'
 
     med_order_bundle = rx_history_query(patient_fname=patient_fname, patient_lname=patient_lname, patient_dob=patient_dob)
-    extended_med_order_bundle = add_rxnorm_coding(med_order_bundle)
+
+    if current_app.config['RXNAV_LOOKUP_ENABLED']:
+        extended_med_order_bundle = add_rxnorm_coding(med_order_bundle)
+
     return med_order_bundle
 
 # todo: version-based routing
