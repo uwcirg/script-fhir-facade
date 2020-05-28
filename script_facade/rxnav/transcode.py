@@ -35,7 +35,7 @@ def add_rxnorm_coding(medication_order_bundle):
         rxnorm_codings = []
         for coding in medication['coding']:
             # skip non-NDC codings
-            if coding['system'] != 'http://hl7.org/fhir/sid/ndc':
+            if coding['system'] != rxnav_system_map['NDC']:
                 continue
             rxnorm_coding = to_rxnorm(coding)
             if not rxnorm_coding:
