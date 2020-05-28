@@ -5,15 +5,14 @@ rxnav_system_map = {
 }
 
 
-def to_rxnorm(coding):
-    base_url = "https://rxnav.nlm.nih.gov"
+def to_rxnorm(coding, rxnav_url):
     reverse_system_map = {v: k for k, v in rxnav_system_map.items()}
     querystring_params = {
         'idtype': reverse_system_map[coding['system']],
         'id': coding['code']
     }
     response = requests.get(
-        url=f"{base_url}/REST/rxcui.json",
+        url=f"{rxnav_url}/REST/rxcui.json",
         params=querystring_params,
     )
 
@@ -29,7 +28,7 @@ def to_rxnorm(coding):
     return coding_fhir
 
 
-def add_rxnorm_coding(medication_order_bundle):
+def add_rxnorm_coding(medication_order_bundle, rxnav_url):
     for medication_order in medication_order_bundle['entry']:
         medication = medication_order['medicationCodeableConcept']['medicationCodeableConcept']
         rxnorm_codings = []
@@ -37,7 +36,7 @@ def add_rxnorm_coding(medication_order_bundle):
             # skip non-NDC codings
             if coding['system'] != rxnav_system_map['NDC']:
                 continue
-            rxnorm_coding = to_rxnorm(coding)
+            rxnorm_coding = to_rxnorm(coding, rxnav_url)
             if not rxnorm_coding:
                 continue
 

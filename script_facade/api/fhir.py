@@ -19,7 +19,10 @@ def medication_order():
     med_order_bundle = rx_history_query(patient_fname=patient_fname, patient_lname=patient_lname, patient_dob=patient_dob)
 
     if current_app.config['RXNAV_LOOKUP_ENABLED']:
-        extended_med_order_bundle = add_rxnorm_coding(med_order_bundle)
+        extended_med_order_bundle = add_rxnorm_coding(
+            med_order_bundle,
+            rxnav_url=current_app.config['RXNAV_URL'],
+        )
 
     return med_order_bundle
 
