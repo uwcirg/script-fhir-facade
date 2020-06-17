@@ -19,7 +19,6 @@ class Patient(object):
         patient = cls()
         patient_fhir = {}
 
-        # todo: use XML namespaces
         given_name = patient_xml.xpath('./script:Name/script:FirstName/text()', namespaces=ns)[0]
         if given_name:
             patient.given_name = given_name
