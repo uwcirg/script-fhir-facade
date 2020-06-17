@@ -17,7 +17,7 @@ class MedicationOrder(object):
         #self.prescriber = prescriber
 
         #self.date_written = date_written
-        #self.date_ended = None
+        self.date_ended = None
 
 
     @classmethod
@@ -38,7 +38,7 @@ class MedicationOrder(object):
 
         #strength = drug_coded.xpath('.//*[local-name()="Strength"]')[0].text
 
-        date_written = xml_element.xpath('.//WrittenDate/Date/text()')[0]
+        med_order.date_written = xml_element.xpath('.//WrittenDate/Date/text()')[0]
 
         med_cc = {
             'medicationCodeableConcept': {
@@ -51,7 +51,7 @@ class MedicationOrder(object):
             }
         }
 
-        self.medication = med_cc
+        med_order.medication = med_cc
 
         quantity_dispensed = xml_element.xpath('.//Quantity/Value/text()')[0]
         dispense_request = {}
@@ -92,7 +92,8 @@ class MedicationOrder(object):
             "display": " ".join((prescriber_fname, prescriber_lname))
         }
 
-        med_order = cls()
+        med_order.dispense_request = dispense_request
+        med_order.prescriber = prescriber
         # med_cc, dispense_request=dispense_request, prescriber=prescriber, date_written=date_written, date_ended=None
         return med_order
     def __str__(self):
