@@ -20,14 +20,19 @@ class MedicationOrder(object):
 
 
     @classmethod
-    def from_xml(cls, xml_element):
+    def from_xml(cls, med_dispensed):
+        """Build a MedicationOrder from a MedicationDispensed xml element object
 
+        :param med_dispensed: MedicationDispensed xml element object
+
+        """
         med_order = cls()
 
         # todo: separate finding/extract into separate steps
-        drug_description = xml_element.xpath('.//DrugDescription/text()')[0]
+        drug_description = med_dispensed.xpath('.//DrugDescription/text()')[0]
 
-        drug_coded = xml_element.xpath('.//DrugCoded')[0]
+
+        drug_coded = med_dispensed.xpath('.//DrugCoded')[0]
         product_code = drug_coded.xpath('.//ProductCode/text()')[0]
         product_code_qualifier = drug_coded.xpath('.//ProductCodeQualifier/text()')[0]
 
@@ -38,7 +43,7 @@ class MedicationOrder(object):
         # element no longer present in OHP PDMP response
         #strength = drug_coded.xpath('.//*[local-name()="Strength"]')[0].text
 
-        med_order.date_written = xml_element.xpath('.//WrittenDate/Date/text()')[0]
+        med_order.date_written = med_dispensed.xpath('.//WrittenDate/Date/text()')[0]
 
         med_cc = {
             'medicationCodeableConcept': {
@@ -53,7 +58,15 @@ class MedicationOrder(object):
 
         med_order.medication = med_cc
 
-        quantity_dispensed = xml_element.xpath('.//Quantity/Value/text()')[0]
+        prescriber_fname = med_dispensed.xpath('.//Prescriber/Name/FirstName/text()')[0]
+        prescriber_lname = med_dispensed.xpath('.//Prescriber/Name/LastName/text()')[0]
+        # use contained resource, or save for other resource relationships?
+        prescriber = {
+            "display": " ".join((prescriber_fname, prescriber_lname))
+        }
+        med_order.prescriber = prescriber
+
+        quantity_dispensed = med_dispensed.xpath('.//Quantity/Value/text()')[0]
         dispense_request = {}
         if quantity_dispensed:
             dispense_request = {
@@ -61,9 +74,11 @@ class MedicationOrder(object):
                     'value': int(quantity_dispensed)
                 }
             }
+        med_order.dispense_request = dispense_request
+
 
         # todo: move these extensions to a separate MedicationDispense resource
-        pharmacy_name = xml_element.xpath('.//Pharmacy/StoreName/text()')[0]
+        pharmacy_name = med_dispensed.xpath('.//Pharmacy/StoreName/text()')[0]
         if pharmacy_name:
             dispense_request.setdefault('extension', [])
             dispense_request['extension'].append(
@@ -73,7 +88,7 @@ class MedicationOrder(object):
                 }
             )
 
-        last_fill = xml_element.xpath('.//LastFillDate/Date/text()')[0]
+        last_fill = med_dispensed.xpath('.//LastFillDate/Date/text()')[0]
         if last_fill:
             dispense_request.setdefault('extension', [])
             dispense_request['extension'].append(
@@ -82,20 +97,8 @@ class MedicationOrder(object):
                     'valueDate': last_fill,
                 }
             )
-
-
-        prescriber_fname = xml_element.xpath('.//Prescriber/Name/FirstName/text()')[0]
-        prescriber_lname = xml_element.xpath('.//Prescriber/Name/LastName/text()')[0]
-
-        # use contained resource, or save for other resource relationships?
-        prescriber = {
-            "display": " ".join((prescriber_fname, prescriber_lname))
-        }
-
-        med_order.dispense_request = dispense_request
-        med_order.prescriber = prescriber
-        # med_cc, dispense_request=dispense_request, prescriber=prescriber, date_written=date_written, date_ended=None
         return med_order
+
     def __str__(self):
         return str(self.as_fhir())
 
