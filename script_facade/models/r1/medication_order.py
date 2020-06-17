@@ -46,14 +46,12 @@ class MedicationOrder(object):
         med_order.date_written = med_dispensed.xpath('.//WrittenDate/Date/text()')[0]
 
         med_cc = {
-            'medicationCodeableConcept': {
-                'coding': [{
-                    'system': product_code_qualifier,
-                    'code': product_code,
-                    'display': drug_description,
-                }],
-                'text': drug_description,
-            }
+            'coding': [{
+                'system': product_code_qualifier,
+                'code': product_code,
+                'display': drug_description,
+            }],
+            'text': drug_description,
         }
 
         med_order.medication = med_cc
