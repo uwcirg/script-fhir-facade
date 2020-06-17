@@ -8,16 +8,15 @@ drug_code_system_map = {
 }
 
 class MedicationOrder(object):
-
-    #def __init__(self, med, dispense_request=None, prescriber=None, date_written=None, date_ended=None):
     def __init__(self):
-        # todo: support medicationReference and medicationCodeableConcept
-        #self.medication = med
-        #self.dispense_request = dispense_request
-        #self.prescriber = prescriber
+        # required attribute
+        # https://www.hl7.org/fhir/DSTU2/medicationorder-definitions.html#MedicationOrder.medication_x_
+        self.medication = None
 
-        #self.date_written = date_written
+        self.date_written = None
         self.date_ended = None
+        self.dispense_request = None
+        self.prescriber = None
 
 
     @classmethod
@@ -36,6 +35,7 @@ class MedicationOrder(object):
         # attempt code system lookup
         product_code_qualifier = drug_code_system_map.get(product_code_qualifier, product_code_qualifier)
 
+        # element no longer present in OHP PDMP response
         #strength = drug_coded.xpath('.//*[local-name()="Strength"]')[0].text
 
         med_order.date_written = xml_element.xpath('.//WrittenDate/Date/text()')[0]
