@@ -10,48 +10,38 @@ class Patient(object):
         self.address = None
 
     @classmethod
-    def from_xml(cls, xml_element):
+    def from_xml(cls, patient_xml, ns=None):
+        """Build a Patient from a SCRIPT Patient xml element object
+
+        :param patient_xml: Patient xml element object
+
+        """
         patient = cls()
         patient_fhir = {}
 
-        # todo: use XML namespaces
-        given_name = xml_element.xpath(
-            './/*[local-name()="Name"]/*[local-name()="FirstName"]/text()',
-        )
+        given_name = patient_xml.xpath('./script:Name/script:FirstName/text()', namespaces=ns)[0]
         if given_name:
-            patient.given_name = given_name[0]
+            patient.given_name = given_name
 
-        family_name = xml_element.xpath(
-            './/*[local-name()="Name"]/*[local-name()="LastName"]/text()',
-        )
+        family_name = patient_xml.xpath('./script:Name/script:LastName/text()', namespaces=ns)[0]
         if family_name:
-            patient.family_name = family_name[0]
+            patient.family_name = family_name
 
-        gender = xml_element.xpath(
-            './/*[local-name()="Gender"]/text()',
-        )
+
+        gender = patient_xml.xpath('./script:Gender/text()', namespaces=ns)[0]
         if gender:
             gender_map = {'m': 'male', 'f': 'female'}
             patient.gender = gender_map[gender[0].lower()]
 
-        birthdate = xml_element.xpath(
-            './/*[local-name()="DateOfBirth"]/*[local-name()="Date"]/text()',
-        )
+        birthdate = patient_xml.xpath('./script:DateOfBirth/script:Date/text()', namespaces=ns)[0]
         if birthdate:
-            patient.birthdate = birthdate[0]
+            patient.birthdate = birthdate
 
-        address_line = xml_element.xpath(
-            './/*[local-name()="Address"]/*[local-name()="AddressLine1"]/text()',
-        )
-        address_city = xml_element.xpath(
-            './/*[local-name()="Address"]/*[local-name()="City"]/text()',
-        )
-        address_state = xml_element.xpath(
-            './/*[local-name()="Address"]/*[local-name()="State"]/text()',
-        )
-        address_postal_code = xml_element.xpath(
-            './/*[local-name()="Address"]/*[local-name()="ZipCode"]/text()',
-        )
+        address_line = patient_xml.xpath('./script:Address/script:AddressLine1/text()', namespaces=ns)
+        address_city = patient_xml.xpath('./script:Address/script:City/text()', namespaces=ns)
+        address_state = patient_xml.xpath('./script:Address/script:State/text()', namespaces=ns)
+        address_postal_code = patient_xml.xpath('./script:Address/script:ZipCode/text()', namespaces=ns)
+
         address = {
             'line': address_line,
             'city': address_city,

@@ -8,6 +8,8 @@ from script_facade.models.r1.medication_order import MedicationOrder
 from script_facade.models.r1.patient import Patient
 from .config import DefaultConfig as client_config
 
+SCRIPT_NAMESPACE = {'script': 'http://www.ncpdp.org/schema/SCRIPT'}
+
 # data to confgure Session
 session_data = {
     'cert': (
@@ -92,13 +94,11 @@ def parse_rx_history_response(xml_string):
 def parse_patient_lookup_query(xml_string):
     # LXML infers encoding from XML metadata
     root = ET.fromstring(xml_string.encode('utf-8'))
-
-    # todo: use SCRIPT XML namespace correctly
-    patient_elements = root.xpath('//*[local-name()="Patient"]')
+    patient_elements = root.xpath('//script:Patient', namespaces=SCRIPT_NAMESPACE)
 
     patients = []
     for patient_element in patient_elements:
-        patients.append(Patient.from_xml(patient_element))
+        patients.append(Patient.from_xml(patient_element, ns=SCRIPT_NAMESPACE))
 
     patients = [p.as_fhir() for p in patients]
     return as_bundle(patients, bundle_type='searchset')
