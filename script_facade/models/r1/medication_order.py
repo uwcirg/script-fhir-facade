@@ -13,11 +13,6 @@ class MedicationOrder(object):
         # https://www.hl7.org/fhir/DSTU2/medicationorder-definitions.html#MedicationOrder.medication_x_
         self.medication = None
 
-        self.date_written = None
-        self.date_ended = None
-        self.dispense_request = None
-        self.prescriber = None
-
 
     @classmethod
     def from_xml(cls, med_dispensed):
@@ -103,11 +98,11 @@ class MedicationOrder(object):
     def as_fhir(self):
         fhir_json = {
             'resourceType': 'MedicationOrder',
-            'dateWritten': self.date_written,
-            'dateEnded': self.date_ended,
+            'dateWritten': getattr(self, 'date_written', None),
+            'dateEnded': getattr(self, 'date_ended', None),
             'medicationCodeableConcept': self.medication,
-            'dispenseRequest': self.dispense_request,
-            'prescriber': self.prescriber,
+            'dispenseRequest': getattr(self, 'dispense_request', None),
+            'prescriber': getattr(self, 'prescriber', None),
         }
         filtered_fhir_json = {k:v for k, v in fhir_json.items() if v}
         return filtered_fhir_json
