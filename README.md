@@ -2,6 +2,8 @@ NCPDP SCRIPT FHIR Facade
 ===================
 FHIR Facade for PDMP SCRIPT Standard Interfaces
 
+[![Docker Image Version (latest semver)](https://img.shields.io/docker/v/uwcirg/script-fhir-facade?label=latest%20release&sort=semver)](https://hub.docker.com/repository/docker/uwcirg/script-fhir-facade)
+
 Development
 -----------
 To start the application follow the below steps in the checkout root
