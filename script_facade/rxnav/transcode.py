@@ -33,8 +33,7 @@ def to_rxnorm(coding, rxnav_url):
 def add_rxnorm_coding(medication_order_bundle, rxnav_url):
     """Add rxnorm codings to each MedicationOrder in given FHIR bundle"""
     for medication_order in medication_order_bundle['entry']:
-        # todo: fixup extra medicationCodeableConcept nesting in FHIR
-        medication = medication_order['medicationCodeableConcept']['medicationCodeableConcept']
+        medication = medication_order['medicationCodeableConcept']
         rxnorm_codings = []
         for coding in medication['coding']:
             # skip non-NDC codings
