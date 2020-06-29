@@ -1,6 +1,7 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, current_app
 
 from script_facade.client.client_106 import rx_history_query, patient_lookup_query
+from script_facade.rxnav.transcode import add_rxnorm_coding
 
 
 blueprint = Blueprint('fhir', __name__, url_prefix='/v/r2/fhir/')
@@ -15,8 +16,15 @@ def medication_order():
     patient_lname = 'Skywalker'
     patient_dob = '1977-01-12'
 
-    bundle = rx_history_query(patient_fname=patient_fname, patient_lname=patient_lname, patient_dob=patient_dob)
-    return bundle
+    med_order_bundle = rx_history_query(patient_fname=patient_fname, patient_lname=patient_lname, patient_dob=patient_dob)
+
+    if current_app.config['RXNAV_LOOKUP_ENABLED']:
+        med_order_bundle = add_rxnorm_coding(
+            med_order_bundle,
+            rxnav_url=current_app.config['RXNAV_URL'],
+        )
+
+    return med_order_bundle
 
 # todo: version-based routing
 # todo: support both types of queries:

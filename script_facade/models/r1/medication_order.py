@@ -43,8 +43,8 @@ class MedicationOrder(object):
         # element no longer present in OHP PDMP response
         #strength = drug_coded.xpath('.//*[local-name()="Strength"]')[0].text
 
-        med_order.date_written = med_dispensed.xpath('.//WrittenDate/Date/text()')[0]
 
+        med_order.date_written = med_dispensed.xpath('.//WrittenDate/Date/text()')[0]
         med_cc = {
             'coding': [{
                 'system': product_code_qualifier,
