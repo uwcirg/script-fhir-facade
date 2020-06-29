@@ -44,6 +44,10 @@ def add_rxnorm_coding(medication_order_bundle, rxnav_url):
                 continue
 
             rxnorm_codings.append(rxnorm_coding)
-        medication['coding'].extend(rxnorm_codings)
+        # add any codings not already present
+        for rxnorm_code in rxnorm_codings:
+            if rxnorm_code in medication['coding']:
+                continue
+            medication['coding'].append(rxnorm_code)
 
     return medication_order_bundle
