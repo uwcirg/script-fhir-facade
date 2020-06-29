@@ -64,16 +64,14 @@ class MedicationOrder(object):
         }
         med_order.prescriber = prescriber
 
-        quantity_dispensed = med_dispensed.xpath('.//Quantity/Value/text()')[0]
         dispense_request = {}
+        quantity_dispensed = med_dispensed.xpath('.//Quantity/Value/text()')[0]
         if quantity_dispensed:
-            dispense_request = {
-                'quantity': {
-                    'value': int(quantity_dispensed)
-                }
-            }
+            dispense_request.setdefault(
+                'quantity',
+                {'value': int(quantity_dispensed)},
+            )
         med_order.dispense_request = dispense_request
-
 
         # todo: move these extensions to a separate MedicationDispense resource
         pharmacy_name = med_dispensed.xpath('.//Pharmacy/StoreName/text()')[0]
