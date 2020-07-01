@@ -1,23 +1,19 @@
 <?xml version="1.0"?>
 <Message version="010" release="006" xmlns="http://www.ncpdp.org/schema/SCRIPT">
     <Header>
-        <To Qualifier="ZZZ">WA-OHP</To>
-        <From Qualifier="ZZZ">{{FromQualifier}}</From>
-        <MessageID>217823234234</MessageID>
-        <SentTime>2019-12-12T19:49:01Z</SentTime>
+        <To Qualifier="ZZZ">PMPGATEWAY</To>
+        <From Qualifier="D">{{FromQualifier}}</From>
+        <MessageID>{{MessageID}}</MessageID>
+        <SentTime>{{SentTime}}</SentTime>
         <Security>
-            <UsernameToken>
-                <Username>9999900</Username>
-            </UsernameToken>
             <Sender>
-                <TertiaryIdentification>tester1</TertiaryIdentification>
+                <TertiaryIdentification>{{DEA}}</TertiaryIdentification>
             </Sender>
             <Receiver>
-                <TertiaryIdentification>WA-OHP</TertiaryIdentification>
+                <TertiaryIdentification>PMPGATEWAY</TertiaryIdentification>
             </Receiver>
         </Security>
         <TestMessage>1</TestMessage>
-        <TertiaryIdentifier>FIL</TertiaryIdentifier>
     </Header>
     <Body>
         <RxHistoryRequest>

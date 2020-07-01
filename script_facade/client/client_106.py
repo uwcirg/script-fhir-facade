@@ -1,7 +1,9 @@
 """Client for NCPDP SCRIPT Standard version 10.6"""
 import os
+from datetime import datetime
 from lxml import etree as ET
 from requests import Request, Session
+from requests.auth import HTTPBasicAuth
 
 from script_facade.models.r1.bundle import as_bundle
 from script_facade.models.r1.medication_order import MedicationOrder
@@ -12,12 +14,13 @@ SCRIPT_NAMESPACE = {'script': 'http://www.ncpdp.org/schema/SCRIPT'}
 
 # data to confgure Session
 session_data = {
-    'cert': (
-        # certificate
-        client_config.SCRIPT_CLIENT_CERT,
-        # private key
-        client_config.SCRIPT_CLIENT_PRIVATE_KEY,
-    ),
+    # 'cert': (
+    #     # certificate
+    #     client_config.SCRIPT_CLIENT_CERT,
+    #     # private key
+    #     client_config.SCRIPT_CLIENT_PRIVATE_KEY,
+    # ),
+    'auth': HTTPBasicAuth('uwa_ncpdp', 'Appriss123!')
 }
 
 class RxRequest(object):
@@ -37,34 +40,37 @@ class RxRequest(object):
 
     def request_body(self, patient_fname, patient_lname, patient_dob):
 
-
+        utc = datetime.utcnow()
+        
         template_vars = {
             'FromQualifier': client_config.SCRIPT_CLIENT_QUALIFIER,
-            #'DEA': client_config.SCRIPT_CLIENT_DEA_NUMBER,
-            'NPI': client_config.SCRIPT_CLIENT_PROVIDER_ID,
+            'DEA': client_config.SCRIPT_CLIENT_DEA_NUMBER,
+            #'NPI': client_config.SCRIPT_CLIENT_PROVIDER_ID,
             #'MutuallyDefined': client_config.SCRIPT_CLIENT_MUTUALLY_DEFINED,
-            #'Specialty': '207R00000X',
-            #'ClinicName': 'Fake Clinic Name',
+            'Specialty': '1835P0018X',
+            'ClinicName': 'Clinical Opioid Summary With Rx Integration',
             'PrescriberLName': 'Prescriber',
-            'PrescriberFName': 'HID Test',
+            'PrescriberFName': 'COSRI Test',
 
-            #'PrescriberAddress1': '555 North Way',
-            #'PrescriberAddress2': 'Building 101',
-            #'PrescriberCity': 'Anytown',
-            #'PrescriberState': 'WA',
-            #'PrescriberZip': '99999',
-            #'PrescriberPlaceLoc': 'AD2',
+            'PrescriberAddress1': '555 North Way',
+            'PrescriberAddress2': 'Building 101',
+            'PrescriberCity': 'Springfield',
+            'PrescriberState': 'OH',
+            'PrescriberZip': '45501',
+            'PrescriberPlaceLoc': 'AD2',
 
-            #'ComNumber': '1234567890',
-            #'ComQualifier': 'TE',
-
+            'ComNumber': '1234567890',
+            'ComQualifier': 'TE',
+            'MessageID': datetime.timestamp(utc),
+            'SentTime': utc.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            
             #'PatientLName': 'Skywalker',
             'PatientLName': patient_lname,
             'PatientFName': patient_fname,
             'PatientGender': 'M',
             'PatientDOB': patient_dob,
             'BenEffectiveDate': '2012-01-01',
-            'BenExpirationDate': '2019-12-11',
+            'BenExpirationDate': '2020-07-11',
             'BenConsent': 'Y',
         }
         template_env = client_config.configure_templates()

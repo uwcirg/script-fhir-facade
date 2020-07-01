@@ -3,7 +3,7 @@ from jinja2 import Environment, PackageLoader, select_autoescape
 
 class DefaultConfig(object):
     # SOAP endpoint URL
-    SCRIPT_ENDPOINT_URL = os.environ.get('SCRIPT_ENDPOINT_URL', 'https://uat-onehealthport-api.axwaycloud.com:8099/ncpdp_requests')
+    SCRIPT_ENDPOINT_URL = os.environ.get('SCRIPT_ENDPOINT_URL', 'https://gateway-prep.pmp.appriss.com/ncpdp_requests')
 
     # cert configuration
     SCRIPT_CLIENT_CERT = os.environ.get('SCRIPT_CLIENT_CERT', '/opt/app/config/certs/pdmp.crt')
@@ -14,7 +14,7 @@ class DefaultConfig(object):
     # NPI
     SCRIPT_CLIENT_PROVIDER_ID = os.environ.get('SCRIPT_CLIENT_PROVIDER_ID', '1234567890')
     SCRIPT_CLIENT_MUTUALLY_DEFINED = os.environ.get('SCRIPT_CLIENT_MUTUALLY_DEFINED')
-    SCRIPT_CLIENT_QUALIFIER = os.environ.get('SCRIPT_CLIENT_QUALIFIER')
+    SCRIPT_CLIENT_QUALIFIER = os.environ.get('SCRIPT_CLIENT_QUALIFIER', 'COSRI')
 
     @classmethod
     def root_path(cls):
