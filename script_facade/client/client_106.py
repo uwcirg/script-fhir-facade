@@ -20,7 +20,7 @@ session_data = {
     #     # private key
     #     client_config.SCRIPT_CLIENT_PRIVATE_KEY,
     # ),
-    'auth': HTTPBasicAuth('uwa_ncpdp', 'Appriss123!')
+    #'auth': HTTPBasicAuth('uwa_ncpdp', 'Appriss123!')
 }
 
 class RxRequest(object):
@@ -115,6 +115,7 @@ def rx_history_query(patient_fname, patient_lname, patient_dob):
     request_builder = RxRequest(url=api_endpoint)
     request = request_builder.build_request(patient_fname, patient_lname, patient_dob)
     s = Session()
+    s.auth = ('uwa_ncpdp', 'Appriss123!')
     response = s.send(request, **session_data)
 
     if not response.ok:
@@ -132,6 +133,7 @@ def patient_lookup_query(first_name, last_name, date_of_birth):
     request_builder = RxRequest(url=api_endpoint)
     request = request_builder.build_request(first_name, last_name, date_of_birth)
     s = Session()
+    s.auth = ('uwa_ncpdp', 'Appriss123!')
     response = s.send(request, **session_data)
 
     if not response.ok:
