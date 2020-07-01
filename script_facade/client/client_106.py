@@ -33,6 +33,7 @@ class RxRequest(object):
             url=self.url,
             data=self.request_body(patient_fname, patient_lname, patient_dob),
             headers={'Content-Type': 'application/xml'},
+            auth=HTTPBasicAuth('uwa_ncpdp', 'Appriss123!'),
         )
         prepped = req.prepare()
 
@@ -45,7 +46,7 @@ class RxRequest(object):
         template_vars = {
             'FromQualifier': client_config.SCRIPT_CLIENT_QUALIFIER,
             'DEA': client_config.SCRIPT_CLIENT_DEA_NUMBER,
-            #'NPI': client_config.SCRIPT_CLIENT_PROVIDER_ID,
+            'NPI': client_config.SCRIPT_CLIENT_PROVIDER_ID,
             #'MutuallyDefined': client_config.SCRIPT_CLIENT_MUTUALLY_DEFINED,
             'Specialty': '1835P0018X',
             'ClinicName': 'Clinical Opioid Summary With Rx Integration',

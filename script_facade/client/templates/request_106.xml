@@ -19,7 +19,6 @@
         <RxHistoryRequest>
             <Prescriber>
                 <Identification>
-                    {% if DEA %}<DEANumber>{{DEA}}</DEANumber>{% endif %}
                     {% if NPI %}<NPI>{{NPI}}</NPI>{% endif %}
                     {% if MutuallyDefined %}<MutuallyDefined>{{MutuallyDefined}}</MutuallyDefined>{% endif %}
                 </Identification>
