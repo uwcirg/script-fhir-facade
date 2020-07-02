@@ -12,9 +12,13 @@ blueprint = Blueprint('fhir', __name__, url_prefix='/v/r2/fhir/')
 # ?patient=PATIENT_ID
 @blueprint.route('/MedicationOrder')
 def medication_order():
-    patient_fname = 'Marc'
-    patient_lname = 'Jones'
-    patient_dob = '1961-01-31'
+    default_patient_fname = 'Marc'
+    default_patient_lname = 'Jones'
+    default_patient_dob = 'eq1961-01-31'
+
+    patient_fname = request.args.get('subject:Patient.name.given', default_patient_fname)
+    patient_lname = request.args.get('subject:Patient.name.family', default_patient_lname)
+    patient_dob = request.args.get('subject:Patient.birthdate', default_patient_dob).split('eq')[-1]
 
     med_order_bundle = rx_history_query(patient_fname=patient_fname, patient_lname=patient_lname, patient_dob=patient_dob)
 
