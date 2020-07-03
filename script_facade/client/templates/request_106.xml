@@ -54,6 +54,9 @@
                 </Name>
                 <Gender>{{PatientGender}}</Gender>
                 <DateOfBirth><Date>{{PatientDOB}}</Date></DateOfBirth>
+                <Address>
+                    <ZipCode>{{PatientZip}}</ZipCode>
+                </Address>
             </Patient>
             <BenefitsCoordination>
                 <EffectiveDate>

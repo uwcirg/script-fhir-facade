@@ -72,6 +72,7 @@ class RxRequest(object):
             'PatientFName': patient_fname,
             'PatientGender': 'M',
             'PatientDOB': patient_dob,
+            'PatientZip': '98114',
             'BenEffectiveDate': '2012-01-01',
             'BenExpirationDate': '2020-07-11',
             'BenConsent': 'Y',
