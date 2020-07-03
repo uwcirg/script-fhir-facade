@@ -4,14 +4,14 @@ from script_facade.client.client_106 import rx_history_query, patient_lookup_que
 from script_facade.rxnav.transcode import add_rxnorm_coding
 
 
-blueprint = Blueprint('fhir', __name__, url_prefix='/v/r2/fhir/')
+blueprint = Blueprint('fhir', __name__)
 
 # todo: version-based routing
 # todo: support both types of queries:
 # ?subject:Patient.name.given=FIRST_NAME&subject:Patient.name.family=LAST_NAME&subject:Patient.birthdate=eqYYYY-MM-DD
 # ?patient=PATIENT_ID
-@blueprint.route('/MedicationOrder')
-def medication_order():
+@blueprint.route('/v/<fhir_version>/fhir/MedicationOrder')
+def medication_order(fhir_version):
     default_patient_fname = 'Luke'
     default_patient_lname = 'Skywalker'
     default_patient_dob = 'eq1977-01-12'
@@ -25,6 +25,7 @@ def medication_order():
         patient_fname=patient_fname,
         patient_lname=patient_lname,
         patient_dob=patient_dob,
+        fhir_version=fhir_version,
     )
 
     if current_app.config['RXNAV_LOOKUP_ENABLED']:
@@ -40,8 +41,8 @@ def medication_order():
 # ?subject:Patient.name.given=FIRST_NAME&subject:Patient.name.family=LAST_NAME&subject:Patient.birthdate=eqYYYY-MM-DD
 # ?subject:Patient.name.given=Luke&subject:Patient.name.family=Skywalker&subject:Patient.birthdate=eq1977-01-12
 # ?patient=PATIENT_ID
-@blueprint.route('/Patient')
-def patient_search():
+@blueprint.route('/v/<fhir_version>/fhir/Patient')
+def patient_search(fhir_version):
     patient_fname = request.args.get('subject:Patient.name.given')
     patient_lname = request.args.get('subject:Patient.name.family')
     patient_dob = request.args.get('subject:Patient.birthdate', '').split('eq')[-1]
