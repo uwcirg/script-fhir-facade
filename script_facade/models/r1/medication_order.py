@@ -65,7 +65,7 @@ class MedicationOrder(object):
         if quantity_dispensed:
             dispense_request.setdefault(
                 'quantity',
-                {'value': int(quantity_dispensed)},
+                {'value': int(float(quantity_dispensed))},
             )
         expected_supply_duration = med_dispensed.xpath('.//DaysSupply/text()')[0]
         if expected_supply_duration:
