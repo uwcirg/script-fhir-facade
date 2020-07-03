@@ -3,8 +3,8 @@ from jinja2 import Environment, PackageLoader, select_autoescape
 
 class DefaultConfig(object):
     # SOAP endpoint URL
-#    SCRIPT_ENDPOINT_URL = os.environ.get('SCRIPT_ENDPOINT_URL', 'https://gateway-prep.pmp.appriss.com/ncpdp_requests')
-    SCRIPT_ENDPOINT_URL = os.environ.get('SCRIPT_ENDPOINT_URL', 'https://calm.cirg.us/cgi-bin2/ncpdp.cgi')
+    SCRIPT_ENDPOINT_URL = os.environ.get('SCRIPT_ENDPOINT_URL', 'https://gateway-prep.pmp.appriss.com/ncpdp_requests')
+#    SCRIPT_ENDPOINT_URL = os.environ.get('SCRIPT_ENDPOINT_URL', 'https://calm.cirg.us/cgi-bin2/ncpdp.cgi')
 
     # cert configuration
     SCRIPT_CLIENT_CERT = os.environ.get('SCRIPT_CLIENT_CERT', '/opt/app/config/certs/pdmp.crt')
