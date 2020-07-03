@@ -21,7 +21,11 @@ def medication_order():
     patient_dob = request.args.get('subject:Patient.birthdate', default_patient_dob).split('eq')[-1]
 
 
-    med_order_bundle = rx_history_query(patient_fname=patient_fname, patient_lname=patient_lname, patient_dob=patient_dob)
+    med_order_bundle = rx_history_query(
+        patient_fname=patient_fname,
+        patient_lname=patient_lname,
+        patient_dob=patient_dob,
+    )
 
     if current_app.config['RXNAV_LOOKUP_ENABLED']:
         med_order_bundle = add_rxnorm_coding(
