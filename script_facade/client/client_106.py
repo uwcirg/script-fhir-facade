@@ -146,11 +146,15 @@ def patient_lookup_query(first_name, last_name, date_of_birth):
     s.auth = ('uwa_ncpdp', 'Appriss123!')
     response = s.send(request, **session_data)
 
-#    if not response.ok:
-    print(response.content)
+    if not response.ok:
+        print(response.content)
     response.raise_for_status()
 
     xml_body = response.text
+
+    log = open("/tmp/pdmp.log", "a")
+    log.write(response.text)
+    log.close()
 
     patient_bundle = parse_patient_lookup_query(xml_body)
     return patient_bundle
