@@ -51,7 +51,7 @@ class RxRequest(object):
             'NPI': client_config.SCRIPT_CLIENT_PROVIDER_ID,
             #'MutuallyDefined': client_config.SCRIPT_CLIENT_MUTUALLY_DEFINED,
             'Specialty': '1835P0018X',
-            'ClinicName': 'Clinical Opioid Summary With Rx Integration',
+            'ClinicName': 'COSRI',
             'PrescriberLName': 'Prescriber',
             'PrescriberFName': 'COSRI Test',
 
