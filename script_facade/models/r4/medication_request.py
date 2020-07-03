@@ -4,20 +4,20 @@ drug_code_system_map = {
     'ND': 'http://hl7.org/fhir/sid/ndc'
 }
 
-class MedicationOrder(object):
+class MedicationRequest(object):
     def __init__(self):
         # required attribute
-        # https://www.hl7.org/fhir/DSTU2/medicationorder-definitions.html#MedicationOrder.medication_x_
+        # https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.medication_x_
         self.medication = None
 
-        self.date_written = None
+        self.authored_on = None
         self.dispense_request = None
-        self.prescriber = None
+        self.requester = None
 
 
     @classmethod
     def from_xml(cls, med_dispensed):
-        """Build a MedicationOrder from a MedicationDispensed xml element object
+        """Build a MedicationRequest from a MedicationDispensed xml element object
 
         :param med_dispensed: MedicationDispensed xml element object
 
@@ -40,7 +40,7 @@ class MedicationOrder(object):
         #strength = drug_coded.xpath('.//*[local-name()="Strength"]')[0].text
 
 
-        med_order.date_written = med_dispensed.xpath('.//WrittenDate/Date/text()')[0]
+        med_order.authored_on = med_dispensed.xpath('.//WrittenDate/Date/text()')[0]
         med_cc = {
             'coding': [{
                 'system': product_code_qualifier,
@@ -55,10 +55,10 @@ class MedicationOrder(object):
         prescriber_fname = med_dispensed.xpath('.//Prescriber/Name/FirstName/text()')[0]
         prescriber_lname = med_dispensed.xpath('.//Prescriber/Name/LastName/text()')[0]
         # use contained resource, or save for other resource relationships?
-        prescriber = {
+        requester = {
             "display": " ".join((prescriber_fname, prescriber_lname))
         }
-        med_order.prescriber = prescriber
+        med_order.requester = requester
 
         dispense_request = {}
         quantity_dispensed = med_dispensed.xpath('.//Quantity/Value/text()')[0]
@@ -107,11 +107,11 @@ class MedicationOrder(object):
 
     def as_fhir(self):
         fhir_json = {
-            'resourceType': 'MedicationOrder',
-            'dateWritten': self.date_written,
+            'resourceType': 'MedicationRequest',
+            'authoredOn': self.authored_on,
             'medicationCodeableConcept': self.medication,
             'dispenseRequest': self.dispense_request,
-            'prescriber': self.prescriber,
+            'requester': self.requester,
         }
         # filter out unset attributes
         filtered_fhir_json = {k:v for k, v in fhir_json.items() if v}
