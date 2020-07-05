@@ -83,10 +83,9 @@ class MedicationRequest(object):
         # todo: move these extensions to a separate MedicationDispense resource
         pharmacy_name = med_dispensed.xpath('.//Pharmacy/StoreName/text()')[0]
         pharmacy_state = med_dispensed.xpath('.//Pharmacy/Address/State/text()')[0]
-        if pharmacy_state:
-            pharmacy_name += " (" + pharmacy_state + ")"
-
         if pharmacy_name:
+            if pharmacy_state:
+                pharmacy_name += " (" + pharmacy_state + ")"
             dispense_request.setdefault('extension', [])
             dispense_request['extension'].append(
                 {
