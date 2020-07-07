@@ -65,14 +65,14 @@ class MedicationRequest(object):
         if quantity_dispensed:
             dispense_request.setdefault(
                 'quantity',
-                {'value': int(quantity_dispensed)},
+                {'value': float(quantity_dispensed)},
             )
         expected_supply_duration = med_dispensed.xpath('.//DaysSupply/text()')[0]
         if expected_supply_duration:
             dispense_request.setdefault(
                 'expectedSupplyDuration',
                 {
-                    'value': int(expected_supply_duration),
+                    'value': float(expected_supply_duration),
                     'unit': 'days',
                     'system': 'http://unitsofmeasure.org',
                     'code': 'd',
