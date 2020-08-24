@@ -94,7 +94,7 @@ def parse_rx_history_response(xml_string, fhir_version):
 
     meds = []
     for med_element in meds_elements:
-        meds.append(med_cls.from_xml(med_element, client_config['RX_SRC_ID']))
+        meds.append(med_cls.from_xml(med_element, client_config.RX_SRC_ID))
 
     meds = [m.as_fhir() for m in meds]
     return as_bundle(meds, bundle_type='searchset')
