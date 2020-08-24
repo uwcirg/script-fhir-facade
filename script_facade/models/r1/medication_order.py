@@ -1,3 +1,5 @@
+from flask import current_app
+
 # https://www.hl7.org/fhir/terminologies-systems.html
 drug_code_system_map = {
     # todo: interpolate dashes as necessary for NDC
@@ -108,6 +110,7 @@ class MedicationOrder(object):
     def as_fhir(self):
         fhir_json = {
             'resourceType': 'MedicationOrder',
+            'identifier': [{'system': current_app.config['RX_SRC_ID']}],
             'dateWritten': self.date_written,
             'medicationCodeableConcept': self.medication,
             'dispenseRequest': self.dispense_request,
