@@ -13,16 +13,17 @@ class MedicationOrder(object):
         self.date_written = None
         self.dispense_request = None
         self.prescriber = None
-
+        self.source_identifier = None
 
     @classmethod
-    def from_xml(cls, med_dispensed):
+    def from_xml(cls, med_dispensed, source_identifier):
         """Build a MedicationOrder from a MedicationDispensed xml element object
 
         :param med_dispensed: MedicationDispensed xml element object
 
         """
         med_order = cls()
+        med_order.source_identifier = source_identifier
 
         # todo: separate finding/extract into separate steps
         drug_description = med_dispensed.xpath('.//DrugDescription/text()')[0]
@@ -108,6 +109,7 @@ class MedicationOrder(object):
     def as_fhir(self):
         fhir_json = {
             'resourceType': 'MedicationOrder',
+            'identifier': [{'system': self.source_identifier}],
             'dateWritten': self.date_written,
             'medicationCodeableConcept': self.medication,
             'dispenseRequest': self.dispense_request,
