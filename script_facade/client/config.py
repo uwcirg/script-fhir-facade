@@ -2,6 +2,9 @@ import os
 from jinja2 import Environment, PackageLoader, select_autoescape
 
 class DefaultConfig(object):
+    # System used in MedicationOrder, MedicationRequest identifiers
+    RX_SRC_ID = os.getenv("RX_SRC_ID", "https://github.com/uwcirg/script-fhir-facade/")
+
     # SOAP endpoint URL
     SCRIPT_ENDPOINT_URL = os.environ.get('SCRIPT_ENDPOINT_URL', 'https://uat-onehealthport-api.axwaycloud.com:8099/ncpdp_requests')
 
