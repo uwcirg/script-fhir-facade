@@ -140,17 +140,25 @@ def rx_history_query(patient_fname, patient_lname, patient_dob, fhir_version):
 
 
 def patient_lookup_query(first_name, last_name, date_of_birth):
-    api_endpoint = client_config.SCRIPT_ENDPOINT_URL
-    request_builder = RxRequest(url=api_endpoint)
-    request = request_builder.build_request(first_name, last_name, date_of_birth)
-    s = Session()
-    response = s.send(request, **session_data)
+    xml_body = None
+    mock_url = client_config.SCRIPT_MOCK_URL
+    if mock_url:
+        mock_base_url = mock_url.replace("github.com", "raw.githubusercontent.com")
+        full_url = f"{mock_base_url}/main/pdmp-{first_name.lower()}-{last_name.lower()}-{date_of_birth}.xml"
+        response = requests.get(full_url)
 
-    if not response.ok:
-        print(response.content)
-    response.raise_for_status()
+        if response.status_code == 200:
+            xml_body = response.text
 
-    xml_body = response.text
+    if not xml_body:
+        api_endpoint = client_config.SCRIPT_ENDPOINT_URL
+        request_builder = RxRequest(url=api_endpoint)
+        request = request_builder.build_request(first_name, last_name, date_of_birth)
+        s = Session()
+        response = s.send(request, **session_data)
+        response.raise_for_status()
+
+        xml_body = response.text
 
     patient_bundle = parse_patient_lookup_query(xml_body)
     return patient_bundle
