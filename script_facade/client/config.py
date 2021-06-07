@@ -7,6 +7,8 @@ class DefaultConfig(object):
 
     # SOAP endpoint URL
     SCRIPT_ENDPOINT_URL = os.environ.get('SCRIPT_ENDPOINT_URL', 'https://uat-onehealthport-api.axwaycloud.com:8099/ncpdp_requests')
+    # link to repo of mock XML files
+    SCRIPT_MOCK_URL = os.environ.get('SCRIPT_MOCK_URL')
 
     # cert configuration
     SCRIPT_CLIENT_CERT = os.environ.get('SCRIPT_CLIENT_CERT', '/opt/app/config/certs/pdmp.crt')
