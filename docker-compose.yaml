@@ -2,6 +2,7 @@
 version: "3.4"
 services:
   facade:
+    image: uwcirg/script-fhir-facade:${PDMP_IMAGE_TAG:-latest}
     build:
       context: .
     volumes:
