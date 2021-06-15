@@ -5,6 +5,7 @@ flask==2.0.1 # via script-facade (setup.py)
 idna==2.10 # via requests
 itsdangerous==2.0.1 # via flask
 jinja2==3.0.1 # via flask
+lxml==4.6.3 # via script-facade (setup.py)
 markupsafe==2.0.1 # via jinja2
 requests==2.25.1 # via script-facade (setup.py)
 urllib3==1.26.5 # via requests
