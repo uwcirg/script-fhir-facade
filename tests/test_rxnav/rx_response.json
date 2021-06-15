@@ -1,1 +1,9 @@
-{"idGroup":{"idType":"NDC","id":"0023-6012","rxnormId":["892598"]}}
+{
+  "idGroup": {
+    "idType": "NDC",
+    "id": "0023-6012",
+    "rxnormId": [
+      "892598"
+    ]
+  }
+}
