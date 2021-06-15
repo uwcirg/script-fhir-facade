@@ -1,10 +1,42 @@
-from flask import Blueprint, request, current_app
+import requests
+from time import time
+from flask import Blueprint, jsonify, request, current_app
+import requests_cache
 
 from script_facade.client.client_106 import rx_history_query, patient_lookup_query
 from script_facade.rxnav.transcode import add_rxnorm_coding
 
 
 blueprint = Blueprint('fhir', __name__)
+
+
+@blueprint.route('/test/<x>')
+def test_cache(x):
+    iterations = 60
+    cache_method = None
+    b4 = time()
+    if x == 'x':
+        cache_method = 'CachedSession'
+        session = requests_cache.CachedSession('demo_cache')
+        for i in range(iterations):
+            session.get('http://httpbin.org/delay/1')
+    elif x == 'y':
+        cache_method = 'Uncached Session'
+        session = requests.Session()
+        for i in range(iterations):
+            session.get('http://httpbin.org/delay/1')
+    elif x == 'z':
+        cache_method = 'requests configured cache'
+        for i in range(iterations):
+            requests.get('http://httpbin.org/delay/1')
+    else:
+        cache_method = 'requests context manager (no cache exception)'
+        with requests_cache.disabled():
+            for i in range(iterations):
+                requests.get('http://httpbin.org/delay/1')
+
+    return jsonify(cache_method=cache_method, duration=time()-b4)
+
 
 # todo: version-based routing
 # todo: support both types of queries:
