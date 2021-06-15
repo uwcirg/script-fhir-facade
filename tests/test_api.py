@@ -12,5 +12,11 @@ def test_medication_order(client, mocker, med_order_bundle):
         "script_facade.api.fhir.rx_history_query",
         return_value=med_order_bundle)
     response = client.get(
-        '/v/v4/fhir/MedicationOrder?subject:Patient.name.given=Padme&subject:Patient.name.family=Amidfla&subject:Patient.birthdate=eq1945-01-15')
+        '/v/v4/fhir/MedicationOrder',
+        query_string={
+          "subject:Patient.name.given": "Padme",
+          "subject:Patient.name.family": "Amidfla",
+          "subject:Patient.birthdate": "eq1945-01-15",
+        }
+      )
     assert response.status_code == 200
