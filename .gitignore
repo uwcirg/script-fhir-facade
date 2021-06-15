@@ -1,4 +1,8 @@
-*.pyc
-
+*.egg-info
 *.env
-
+*.pyc
+*__pycache__
+.coverage
+.eggs
+.tox
+coverage.xml

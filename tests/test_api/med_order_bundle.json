@@ -1,0 +1,651 @@
+{
+    "resourceType": "Bundle",
+    "entry": [
+        {
+            "resourceType": "MedicationRequest",
+            "identifier": [
+                {
+                    "system": "https://github.com/uwcirg/script-fhir-facade/"
+                }
+            ],
+            "authoredOn": "2017-05-07",
+            "medicationCodeableConcept": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/sid/ndc",
+                        "code": "00228298150",
+                        "display": "OXYCODONE-ACETAMINOPHEN 5-325"
+                    }
+                ],
+                "text": "OXYCODONE-ACETAMINOPHEN 5-325"
+            },
+            "dispenseRequest": {
+                "quantity": {
+                    "value": 1.0
+                },
+                "expectedSupplyDuration": {
+                    "value": 1.0,
+                    "unit": "days",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "d"
+                },
+                "extension": [
+                    {
+                        "url": "http://cosri.org/fhir/pharmacy_name",
+                        "valueString": "TEST, DOCTOR"
+                    },
+                    {
+                        "url": "http://cosri.org/fhir/last_fill",
+                        "valueDate": "2017-05-07"
+                    }
+                ]
+            },
+            "requester": {
+                "display": "TEST TEST"
+            }
+        },
+        {
+            "resourceType": "MedicationRequest",
+            "identifier": [
+                {
+                    "system": "https://github.com/uwcirg/script-fhir-facade/"
+                }
+            ],
+            "authoredOn": "2018-05-07",
+            "medicationCodeableConcept": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/sid/ndc",
+                        "code": "00406577101",
+                        "display": "METHADONE HCL 10 MG TABLET"
+                    }
+                ],
+                "text": "METHADONE HCL 10 MG TABLET"
+            },
+            "dispenseRequest": {
+                "quantity": {
+                    "value": 1.0
+                },
+                "expectedSupplyDuration": {
+                    "value": 1.0,
+                    "unit": "days",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "d"
+                },
+                "extension": [
+                    {
+                        "url": "http://cosri.org/fhir/pharmacy_name",
+                        "valueString": "TEST, DOCTOR"
+                    },
+                    {
+                        "url": "http://cosri.org/fhir/last_fill",
+                        "valueDate": "2018-05-07"
+                    }
+                ]
+            },
+            "requester": {
+                "display": "TEST TEST"
+            }
+        },
+        {
+            "resourceType": "MedicationRequest",
+            "identifier": [
+                {
+                    "system": "https://github.com/uwcirg/script-fhir-facade/"
+                }
+            ],
+            "authoredOn": "2019-11-01",
+            "medicationCodeableConcept": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/sid/ndc",
+                        "code": "00406577101",
+                        "display": "METHADONE HCL 10 MG TABLET"
+                    }
+                ],
+                "text": "METHADONE HCL 10 MG TABLET"
+            },
+            "dispenseRequest": {
+                "quantity": {
+                    "value": 1.0
+                },
+                "expectedSupplyDuration": {
+                    "value": 1.0,
+                    "unit": "days",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "d"
+                },
+                "extension": [
+                    {
+                        "url": "http://cosri.org/fhir/pharmacy_name",
+                        "valueString": "TEST, DOCTOR"
+                    },
+                    {
+                        "url": "http://cosri.org/fhir/last_fill",
+                        "valueDate": "2019-11-01"
+                    }
+                ]
+            },
+            "requester": {
+                "display": "TEST TEST"
+            }
+        },
+        {
+            "resourceType": "MedicationRequest",
+            "identifier": [
+                {
+                    "system": "https://github.com/uwcirg/script-fhir-facade/"
+                }
+            ],
+            "authoredOn": "2019-10-15",
+            "medicationCodeableConcept": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/sid/ndc",
+                        "code": "00406577101",
+                        "display": "METHADONE HCL 10 MG TABLET"
+                    }
+                ],
+                "text": "METHADONE HCL 10 MG TABLET"
+            },
+            "dispenseRequest": {
+                "quantity": {
+                    "value": 1.0
+                },
+                "expectedSupplyDuration": {
+                    "value": 1.0,
+                    "unit": "days",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "d"
+                },
+                "extension": [
+                    {
+                        "url": "http://cosri.org/fhir/pharmacy_name",
+                        "valueString": "TEST, DOCTOR"
+                    },
+                    {
+                        "url": "http://cosri.org/fhir/last_fill",
+                        "valueDate": "2019-10-15"
+                    }
+                ]
+            },
+            "requester": {
+                "display": "TEST TEST"
+            }
+        },
+        {
+            "resourceType": "MedicationRequest",
+            "identifier": [
+                {
+                    "system": "https://github.com/uwcirg/script-fhir-facade/"
+                }
+            ],
+            "authoredOn": "2019-10-01",
+            "medicationCodeableConcept": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/sid/ndc",
+                        "code": "00406577101",
+                        "display": "METHADONE HCL 10 MG TABLET"
+                    }
+                ],
+                "text": "METHADONE HCL 10 MG TABLET"
+            },
+            "dispenseRequest": {
+                "quantity": {
+                    "value": 1.0
+                },
+                "expectedSupplyDuration": {
+                    "value": 1.0,
+                    "unit": "days",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "d"
+                },
+                "extension": [
+                    {
+                        "url": "http://cosri.org/fhir/pharmacy_name",
+                        "valueString": "TEST, DOCTOR"
+                    },
+                    {
+                        "url": "http://cosri.org/fhir/last_fill",
+                        "valueDate": "2019-10-01"
+                    }
+                ]
+            },
+            "requester": {
+                "display": "TEST TEST"
+            }
+        },
+        {
+            "resourceType": "MedicationRequest",
+            "identifier": [
+                {
+                    "system": "https://github.com/uwcirg/script-fhir-facade/"
+                }
+            ],
+            "authoredOn": "2019-07-15",
+            "medicationCodeableConcept": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/sid/ndc",
+                        "code": "00406577101",
+                        "display": "METHADONE HCL 10 MG TABLET"
+                    }
+                ],
+                "text": "METHADONE HCL 10 MG TABLET"
+            },
+            "dispenseRequest": {
+                "quantity": {
+                    "value": 1.0
+                },
+                "expectedSupplyDuration": {
+                    "value": 1.0,
+                    "unit": "days",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "d"
+                },
+                "extension": [
+                    {
+                        "url": "http://cosri.org/fhir/pharmacy_name",
+                        "valueString": "TEST, DOCTOR"
+                    },
+                    {
+                        "url": "http://cosri.org/fhir/last_fill",
+                        "valueDate": "2019-07-15"
+                    }
+                ]
+            },
+            "requester": {
+                "display": "TEST TEST"
+            }
+        },
+        {
+            "resourceType": "MedicationRequest",
+            "identifier": [
+                {
+                    "system": "https://github.com/uwcirg/script-fhir-facade/"
+                }
+            ],
+            "authoredOn": "2019-07-01",
+            "medicationCodeableConcept": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/sid/ndc",
+                        "code": "00406577101",
+                        "display": "METHADONE HCL 10 MG TABLET"
+                    }
+                ],
+                "text": "METHADONE HCL 10 MG TABLET"
+            },
+            "dispenseRequest": {
+                "quantity": {
+                    "value": 1.0
+                },
+                "expectedSupplyDuration": {
+                    "value": 1.0,
+                    "unit": "days",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "d"
+                },
+                "extension": [
+                    {
+                        "url": "http://cosri.org/fhir/pharmacy_name",
+                        "valueString": "TEST, DOCTOR"
+                    },
+                    {
+                        "url": "http://cosri.org/fhir/last_fill",
+                        "valueDate": "2019-07-01"
+                    }
+                ]
+            },
+            "requester": {
+                "display": "TEST TEST"
+            }
+        },
+        {
+            "resourceType": "MedicationRequest",
+            "identifier": [
+                {
+                    "system": "https://github.com/uwcirg/script-fhir-facade/"
+                }
+            ],
+            "authoredOn": "2019-06-15",
+            "medicationCodeableConcept": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/sid/ndc",
+                        "code": "00406577101",
+                        "display": "METHADONE HCL 10 MG TABLET"
+                    }
+                ],
+                "text": "METHADONE HCL 10 MG TABLET"
+            },
+            "dispenseRequest": {
+                "quantity": {
+                    "value": 1.0
+                },
+                "expectedSupplyDuration": {
+                    "value": 1.0,
+                    "unit": "days",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "d"
+                },
+                "extension": [
+                    {
+                        "url": "http://cosri.org/fhir/pharmacy_name",
+                        "valueString": "TEST, DOCTOR"
+                    },
+                    {
+                        "url": "http://cosri.org/fhir/last_fill",
+                        "valueDate": "2019-06-15"
+                    }
+                ]
+            },
+            "requester": {
+                "display": "TEST TEST"
+            }
+        },
+        {
+            "resourceType": "MedicationRequest",
+            "identifier": [
+                {
+                    "system": "https://github.com/uwcirg/script-fhir-facade/"
+                }
+            ],
+            "authoredOn": "2019-06-01",
+            "medicationCodeableConcept": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/sid/ndc",
+                        "code": "00406577101",
+                        "display": "METHADONE HCL 10 MG TABLET"
+                    }
+                ],
+                "text": "METHADONE HCL 10 MG TABLET"
+            },
+            "dispenseRequest": {
+                "quantity": {
+                    "value": 1.0
+                },
+                "expectedSupplyDuration": {
+                    "value": 1.0,
+                    "unit": "days",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "d"
+                },
+                "extension": [
+                    {
+                        "url": "http://cosri.org/fhir/pharmacy_name",
+                        "valueString": "TEST, DOCTOR"
+                    },
+                    {
+                        "url": "http://cosri.org/fhir/last_fill",
+                        "valueDate": "2019-06-01"
+                    }
+                ]
+            },
+            "requester": {
+                "display": "TEST TEST"
+            }
+        },
+        {
+            "resourceType": "MedicationRequest",
+            "identifier": [
+                {
+                    "system": "https://github.com/uwcirg/script-fhir-facade/"
+                }
+            ],
+            "authoredOn": "2019-04-01",
+            "medicationCodeableConcept": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/sid/ndc",
+                        "code": "00406577101",
+                        "display": "METHADONE HCL 10 MG TABLET"
+                    }
+                ],
+                "text": "METHADONE HCL 10 MG TABLET"
+            },
+            "dispenseRequest": {
+                "quantity": {
+                    "value": 1.0
+                },
+                "expectedSupplyDuration": {
+                    "value": 1.0,
+                    "unit": "days",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "d"
+                },
+                "extension": [
+                    {
+                        "url": "http://cosri.org/fhir/pharmacy_name",
+                        "valueString": "TEST, DOCTOR"
+                    },
+                    {
+                        "url": "http://cosri.org/fhir/last_fill",
+                        "valueDate": "2019-04-01"
+                    }
+                ]
+            },
+            "requester": {
+                "display": "TEST TEST"
+            }
+        },
+        {
+            "resourceType": "MedicationRequest",
+            "identifier": [
+                {
+                    "system": "https://github.com/uwcirg/script-fhir-facade/"
+                }
+            ],
+            "authoredOn": "2019-04-15",
+            "medicationCodeableConcept": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/sid/ndc",
+                        "code": "00406577101",
+                        "display": "METHADONE HCL 10 MG TABLET"
+                    }
+                ],
+                "text": "METHADONE HCL 10 MG TABLET"
+            },
+            "dispenseRequest": {
+                "quantity": {
+                    "value": 1.0
+                },
+                "expectedSupplyDuration": {
+                    "value": 1.0,
+                    "unit": "days",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "d"
+                },
+                "extension": [
+                    {
+                        "url": "http://cosri.org/fhir/pharmacy_name",
+                        "valueString": "TEST, DOCTOR"
+                    },
+                    {
+                        "url": "http://cosri.org/fhir/last_fill",
+                        "valueDate": "2019-04-15"
+                    }
+                ]
+            },
+            "requester": {
+                "display": "TEST TEST"
+            }
+        },
+        {
+            "resourceType": "MedicationRequest",
+            "identifier": [
+                {
+                    "system": "https://github.com/uwcirg/script-fhir-facade/"
+                }
+            ],
+            "authoredOn": "2019-05-01",
+            "medicationCodeableConcept": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/sid/ndc",
+                        "code": "00406577101",
+                        "display": "METHADONE HCL 10 MG TABLET"
+                    }
+                ],
+                "text": "METHADONE HCL 10 MG TABLET"
+            },
+            "dispenseRequest": {
+                "quantity": {
+                    "value": 1.0
+                },
+                "expectedSupplyDuration": {
+                    "value": 1.0,
+                    "unit": "days",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "d"
+                },
+                "extension": [
+                    {
+                        "url": "http://cosri.org/fhir/pharmacy_name",
+                        "valueString": "TEST, DOCTOR"
+                    },
+                    {
+                        "url": "http://cosri.org/fhir/last_fill",
+                        "valueDate": "2019-05-01"
+                    }
+                ]
+            },
+            "requester": {
+                "display": "TEST TEST"
+            }
+        },
+        {
+            "resourceType": "MedicationRequest",
+            "identifier": [
+                {
+                    "system": "https://github.com/uwcirg/script-fhir-facade/"
+                }
+            ],
+            "authoredOn": "2019-05-15",
+            "medicationCodeableConcept": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/sid/ndc",
+                        "code": "00406577101",
+                        "display": "METHADONE HCL 10 MG TABLET"
+                    }
+                ],
+                "text": "METHADONE HCL 10 MG TABLET"
+            },
+            "dispenseRequest": {
+                "quantity": {
+                    "value": 1.0
+                },
+                "expectedSupplyDuration": {
+                    "value": 1.0,
+                    "unit": "days",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "d"
+                },
+                "extension": [
+                    {
+                        "url": "http://cosri.org/fhir/pharmacy_name",
+                        "valueString": "TEST, DOCTOR"
+                    },
+                    {
+                        "url": "http://cosri.org/fhir/last_fill",
+                        "valueDate": "2019-05-15"
+                    }
+                ]
+            },
+            "requester": {
+                "display": "TEST TEST"
+            }
+        },
+        {
+            "resourceType": "MedicationRequest",
+            "identifier": [
+                {
+                    "system": "https://github.com/uwcirg/script-fhir-facade/"
+                }
+            ],
+            "authoredOn": "2019-11-15",
+            "medicationCodeableConcept": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/sid/ndc",
+                        "code": "00406577101",
+                        "display": "METHADONE HCL 10 MG TABLET"
+                    }
+                ],
+                "text": "METHADONE HCL 10 MG TABLET"
+            },
+            "dispenseRequest": {
+                "quantity": {
+                    "value": 1.0
+                },
+                "expectedSupplyDuration": {
+                    "value": 1.0,
+                    "unit": "days",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "d"
+                },
+                "extension": [
+                    {
+                        "url": "http://cosri.org/fhir/pharmacy_name",
+                        "valueString": "TEST, DOCTOR"
+                    },
+                    {
+                        "url": "http://cosri.org/fhir/last_fill",
+                        "valueDate": "2019-11-15"
+                    }
+                ]
+            },
+            "requester": {
+                "display": "TEST TEST"
+            }
+        },
+        {
+            "resourceType": "MedicationRequest",
+            "identifier": [
+                {
+                    "system": "https://github.com/uwcirg/script-fhir-facade/"
+                }
+            ],
+            "authoredOn": "2019-12-01",
+            "medicationCodeableConcept": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/sid/ndc",
+                        "code": "00406577101",
+                        "display": "METHADONE HCL 10 MG TABLET"
+                    }
+                ],
+                "text": "METHADONE HCL 10 MG TABLET"
+            },
+            "dispenseRequest": {
+                "quantity": {
+                    "value": 1.0
+                },
+                "expectedSupplyDuration": {
+                    "value": 1.0,
+                    "unit": "days",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "d"
+                },
+                "extension": [
+                    {
+                        "url": "http://cosri.org/fhir/pharmacy_name",
+                        "valueString": "TEST, DOCTOR"
+                    },
+                    {
+                        "url": "http://cosri.org/fhir/last_fill",
+                        "valueDate": "2019-12-01"
+                    }
+                ]
+            },
+            "requester": {
+                "display": "TEST TEST"
+            }
+        }
+    ],
+    "type": "searchset"
+}
