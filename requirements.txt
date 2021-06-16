@@ -7,6 +7,10 @@ itsdangerous==2.0.1 # via flask
 jinja2==3.0.1 # via flask
 lxml==4.6.3 # via script-facade (setup.py)
 markupsafe==2.0.1 # via jinja2
-requests==2.25.1 # via script-facade (setup.py)
+redis==3.5.3 # via script-facade (setup.py)
+requests-cache==0.6.4 # via script-facade (setup.py)
+requests==2.25.1 # via requests-cache
+six==1.16.0 # via url-normalize
+url-normalize==1.4.3 # via requests-cache
 urllib3==1.26.5 # via requests
 werkzeug==2.0.1 # via flask

@@ -1,6 +1,6 @@
 """Client for NCPDP SCRIPT Standard version 10.6"""
-import os
 from lxml import etree as ET
+import requests_cache
 import requests
 from requests import Request, Session
 
@@ -13,7 +13,7 @@ from .config import DefaultConfig as client_config
 
 SCRIPT_NAMESPACE = {'script': 'http://www.ncpdp.org/schema/SCRIPT'}
 
-# data to confgure Session
+# data to configure Session
 session_data = {
     'cert': (
         # certificate
@@ -22,6 +22,7 @@ session_data = {
         client_config.SCRIPT_CLIENT_PRIVATE_KEY,
     ),
 }
+
 
 class RxRequest(object):
     def __init__(self, url):
@@ -39,7 +40,6 @@ class RxRequest(object):
         return prepped
 
     def request_body(self, patient_fname, patient_lname, patient_dob):
-
 
         template_vars = {
             'FromQualifier': client_config.SCRIPT_CLIENT_QUALIFIER,
@@ -120,7 +120,8 @@ def rx_history_query(patient_fname, patient_lname, patient_dob, fhir_version):
     if mock_url:
         mock_base_url = mock_url.replace("github.com", "raw.githubusercontent.com")
         full_url = f"{mock_base_url}/main/pdmp-{patient_fname.lower()}-{patient_lname.lower()}-{patient_dob}.xml"
-        response = requests.get(full_url)
+        with requests_cache.disabled():
+            response = requests.get(full_url)
 
         if response.status_code == 200:
             xml_body = response.text
@@ -145,7 +146,8 @@ def patient_lookup_query(first_name, last_name, date_of_birth):
     if mock_url:
         mock_base_url = mock_url.replace("github.com", "raw.githubusercontent.com")
         full_url = f"{mock_base_url}/main/pdmp-{first_name.lower()}-{last_name.lower()}-{date_of_birth}.xml"
-        response = requests.get(full_url)
+        with requests_cache.disabled():
+            response = requests.get(full_url)
 
         if response.status_code == 200:
             xml_body = response.text
