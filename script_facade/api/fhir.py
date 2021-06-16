@@ -1,7 +1,8 @@
 import requests
+import requests_cache
 from time import time
 from flask import Blueprint, jsonify, request, current_app
-import requests_cache
+from flask.json import JSONEncoder
 
 from script_facade.client.client_106 import rx_history_query, patient_lookup_query
 from script_facade.rxnav.transcode import add_rxnorm_coding
@@ -36,6 +37,37 @@ def test_cache(x):
                 requests.get('http://httpbin.org/delay/1')
 
     return jsonify(cache_method=cache_method, duration=time()-b4)
+
+
+@blueprint.route('/settings', defaults={'config_key': None})
+@blueprint.route('/settings/<string:config_key>')
+def config_settings(config_key):
+    """Non-secret application settings"""
+
+    # workaround no JSON representation for datetime.timedelta
+    class CustomJSONEncoder(JSONEncoder):
+        def default(self, obj):
+            return str(obj)
+    current_app.json_encoder = CustomJSONEncoder
+
+    # return selective keys - not all can be be viewed by users, e.g.secret key
+    blacklist = ('SECRET', 'KEY')
+
+    if config_key:
+        key = config_key.upper()
+        for pattern in blacklist:
+            if pattern in key:
+                abort(400, f"Configuration key {key} not available")
+        return jsonify({key: current_app.config.get(key)})
+
+    config_settings = {}
+    for key in current_app.config:
+        matches = any(pattern for pattern in blacklist if pattern in key)
+        if matches:
+            continue
+        config_settings[key] = current_app.config.get(key)
+
+    return jsonify(config_settings)
 
 
 # todo: version-based routing
