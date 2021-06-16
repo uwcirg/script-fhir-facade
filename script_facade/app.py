@@ -21,6 +21,7 @@ def register_blueprints(app):
     """register all blueprints for application
     """
     app.register_blueprint(api.fhir.blueprint)
+    app.register_blueprint(api.misc.blueprint)
 
 
 def configure_app(app):

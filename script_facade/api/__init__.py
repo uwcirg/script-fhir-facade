@@ -1,5 +1,6 @@
-from . import fhir
+from . import fhir, misc
 
 __all__ = [
     'fhir',
+    'misc',
 ]
