@@ -38,6 +38,13 @@ def configure_cache(app):
     #
     #   with requests_cache.disabled():
     #     requests.get('http://httpbin.org/get')
+
+    # Catch configuration problems early; require REQUEST_CACHE_URL
+    if not app.config.get('REQUEST_CACHE_URL'):
+        msg = "required configuration 'REQUEST_CACHE_URL' not present"
+        app.logger.error(msg)
+        raise RuntimeError(msg)
+
     app.logger.info(
         "Initiating requests.cache with %s", app.config.get('REQUEST_CACHE_URL'))
     requests_cache.install_cache(
