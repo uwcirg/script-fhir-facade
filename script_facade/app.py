@@ -37,7 +37,8 @@ def configure_cache(app):
     #
     #   with requests_cache.disabled():
     #     requests.get('http://httpbin.org/get')
-
+    app.logger.info(
+        f"Initiating requests.cache with {app.config.get('REQUEST_CACHE_URL')}")
     requests_cache.install_cache(
         cache_name=app.name,
         backend='redis',
