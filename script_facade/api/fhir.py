@@ -1,4 +1,5 @@
 from flask import Blueprint, request, current_app
+import timeit
 
 from script_facade.client.client_106 import rx_history_query, patient_lookup_query
 from script_facade.rxnav.transcode import add_rxnorm_coding
@@ -21,19 +22,22 @@ def medication_order(fhir_version):
     patient_lname = request.args.get('subject:Patient.name.family', default_patient_lname)
     patient_dob = request.args.get('subject:Patient.birthdate', default_patient_dob).split('eq')[-1]
 
+    t1 = timeit.default_timer()
     med_order_bundle = rx_history_query(
         patient_fname=patient_fname,
         patient_lname=patient_lname,
         patient_dob=patient_dob,
         fhir_version=fhir_version,
     )
+    current_app.logger.debug("rx_history_query duration %s", timeit.default_timer() - t1)
 
+    t2 = timeit.default_timer()
     if current_app.config['RXNAV_LOOKUP_ENABLED']:
         med_order_bundle = add_rxnorm_coding(
             med_order_bundle,
             rxnav_url=current_app.config['RXNAV_URL'],
         )
-
+    current_app.logger.debug("rxnav_lookup duration %s", timeit.default_timer() - t2)
     return med_order_bundle
 
 
