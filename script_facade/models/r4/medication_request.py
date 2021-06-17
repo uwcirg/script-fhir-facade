@@ -23,55 +23,33 @@ class MedicationRequest(object):
 
         """
 
+        # wrap version-specific extraction methods
         if script_version == "106":
-            med_request = cls.from_106_xml(med_dispensed, source_identifier)
+            med_request = cls.from_106_xml(med_dispensed)
         elif script_version == "20170701":
-            med_request = cls.from_20170701_xml(med_dispensed, source_identifier)
+            med_request = cls.from_20170701_xml(med_dispensed)
         else:
             # TODO raise exception
             pass
 
+        med_request.source_identifier = source_identifier
+        med_request.authored_on = cls.authored_on_from_xml(med_dispensed)
         return med_request
 
+
     @classmethod
-    def from_20170701_xml(cls, med_dispensed, source_identifier):
+    def from_20170701_xml(cls, med_dispensed):
         med_request = cls()
+        med_request.medication = cls.med_cc_from_20170701_xml(med_dispensed)
 
         return med_request
 
 
     @classmethod
-    def from_106_xml(cls, med_dispensed, source_identifier):
+    def from_106_xml(cls, med_dispensed):
         med_order = cls()
-        med_order.source_identifier = source_identifier
+        med_order.medication = cls.med_cc_from_106_xml(med_dispensed)
 
-        # todo: separate finding/extract into separate steps
-        drug_description = med_dispensed.xpath('.//DrugDescription/text()')[0]
-
-
-        drug_coded = med_dispensed.xpath('.//DrugCoded')[0]
-        product_code = drug_coded.xpath('.//ProductCode/text()')[0]
-        product_code_qualifier = drug_coded.xpath('.//ProductCodeQualifier/text()')[0]
-
-
-        # attempt code system lookup
-        product_code_qualifier = drug_code_system_map.get(product_code_qualifier, product_code_qualifier)
-
-        # element no longer present in OHP PDMP response
-        #strength = drug_coded.xpath('.//*[local-name()="Strength"]')[0].text
-
-
-        med_order.authored_on = med_dispensed.xpath('.//WrittenDate/Date/text()')[0]
-        med_cc = {
-            'coding': [{
-                'system': product_code_qualifier,
-                'code': product_code,
-                'display': drug_description,
-            }],
-            'text': drug_description,
-        }
-
-        med_order.medication = med_cc
 
         prescriber_fname = med_dispensed.xpath('.//Prescriber/Name/FirstName/text()')[0]
         prescriber_lname = med_dispensed.xpath('.//Prescriber/Name/LastName/text()')[0]
@@ -122,6 +100,68 @@ class MedicationRequest(object):
                 }
             )
         return med_order
+
+
+    @classmethod
+    def authored_on_from_xml(cls, med_dispensed):
+
+        authored_on = med_dispensed.xpath('.//WrittenDate/Date/text()')[0]
+        return authored_on
+
+
+    @classmethod
+    def med_cc_from_106_xml(cls, med_dispensed):
+        # todo: separate finding/extract into separate steps
+        drug_description = med_dispensed.xpath('.//DrugDescription/text()')[0]
+
+
+        drug_coded = med_dispensed.xpath('.//DrugCoded')[0]
+        product_code = drug_coded.xpath('.//ProductCode/text()')[0]
+        product_code_qualifier = drug_coded.xpath('.//ProductCodeQualifier/text()')[0]
+
+
+        # attempt code system lookup
+        product_code_qualifier = drug_code_system_map.get(product_code_qualifier, product_code_qualifier)
+
+        # element no longer present in OHP PDMP response
+        #strength = drug_coded.xpath('.//*[local-name()="Strength"]')[0].text
+
+        med_cc = {
+            'coding': [{
+                'system': product_code_qualifier,
+                'code': product_code,
+                'display': drug_description,
+            }],
+            'text': drug_description,
+        }
+        return med_cc
+
+
+    @classmethod
+    def med_cc_from_20170701_xml(cls, med_dispensed):
+        drug_description = med_dispensed.xpath('.//DrugDescription/text()')[0]
+
+        drug_coded = med_dispensed.xpath('.//DrugCoded')[0]
+        product_code = drug_coded.xpath('.//ProductCode/Code/text()')[0]
+        product_code_qualifier = drug_coded.xpath('.//ProductCode/Qualifier/text()')[0]
+
+        # attempt code system lookup
+        product_code_qualifier = drug_code_system_map.get(product_code_qualifier, product_code_qualifier)
+
+        # element no longer present in OHP PDMP response
+        #strength = drug_coded.xpath('.//*[local-name()="Strength"]')[0].text
+
+        #med_order.authored_on = med_dispensed.xpath('.//WrittenDate/Date/text()')[0]
+        med_cc = {
+            'coding': [{
+                'system': product_code_qualifier,
+                'code': product_code,
+                'display': drug_description,
+            }],
+            'text': drug_description,
+        }
+        return med_cc
+
 
     def __str__(self):
         return str(self.as_fhir())
