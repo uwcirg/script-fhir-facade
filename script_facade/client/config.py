@@ -5,6 +5,9 @@ class DefaultConfig(object):
     # System used in MedicationOrder, MedicationRequest identifiers
     RX_SRC_ID = os.getenv("RX_SRC_ID", "https://github.com/uwcirg/script-fhir-facade/")
 
+    # NCPDP SCRIPT version
+    SCRIPT_VERSION = os.environ.get('SCRIPT_VERSION', '20170701')
+
     # SOAP endpoint URL
     SCRIPT_ENDPOINT_URL = os.environ.get('SCRIPT_ENDPOINT_URL', 'https://uat-onehealthport-api.axwaycloud.com:8099/ncpdp_requests')
     # link to repo of mock XML files

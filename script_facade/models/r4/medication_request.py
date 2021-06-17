@@ -16,12 +16,32 @@ class MedicationRequest(object):
         self.source_identifier = None
 
     @classmethod
-    def from_xml(cls, med_dispensed, source_identifier):
+    def from_xml(cls, med_dispensed, source_identifier, script_version):
         """Build a MedicationRequest from a MedicationDispensed xml element object
 
         :param med_dispensed: MedicationDispensed xml element object
 
         """
+
+        if script_version == "106":
+            med_request = cls.from_106_xml(med_dispensed, source_identifier)
+        elif script_version == "20170701":
+            med_request = cls.from_20170701_xml(med_dispensed, source_identifier)
+        else:
+            # TODO raise exception
+            pass
+
+        return med_request
+
+    @classmethod
+    def from_20170701_xml(cls, med_dispensed, source_identifier):
+        med_request = cls()
+
+        return med_request
+
+
+    @classmethod
+    def from_106_xml(cls, med_dispensed, source_identifier):
         med_order = cls()
         med_order.source_identifier = source_identifier
 

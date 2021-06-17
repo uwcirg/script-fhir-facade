@@ -25,8 +25,9 @@ session_data = {
 
 
 class RxRequest(object):
-    def __init__(self, url):
+    def __init__(self, url, script_version):
         self.url = url
+        self.script_version = script_version
 
     def build_request(self, patient_fname, patient_lname, patient_dob):
         req = Request(
@@ -71,13 +72,14 @@ class RxRequest(object):
             'BenConsent': 'Y',
         }
         template_env = client_config.configure_templates()
-        template = template_env.get_template('request_106.xml')
+        template = template_env.get_template(f'request_{self.script_version}.xml')
+
         xml_content = template.render(**template_vars)
 
         return xml_content
 
 
-def parse_rx_history_response(xml_string, fhir_version):
+def parse_rx_history_response(xml_string, fhir_version, script_version):
     # fixup missing colon in XML NS declaration
     xml_string = xml_string.replace('xmlns="http://www.ncpdp.org/schema/SCRIPT"', 'xmlns:SCRIPT="http://www.ncpdp.org/schema/SCRIPT"')
     # LXML infers encoding from XML metadata
@@ -95,7 +97,7 @@ def parse_rx_history_response(xml_string, fhir_version):
 
     meds = []
     for med_element in meds_elements:
-        meds.append(med_cls.from_xml(med_element, client_config.RX_SRC_ID))
+        meds.append(med_cls.from_xml(med_element, client_config.RX_SRC_ID, script_version=script_version))
 
     meds = [m.as_fhir() for m in meds]
     return as_bundle(meds, bundle_type='searchset')
@@ -114,7 +116,10 @@ def parse_patient_lookup_query(xml_string):
     return as_bundle(patients, bundle_type='searchset')
 
 
-def rx_history_query(patient_fname, patient_lname, patient_dob, fhir_version):
+def rx_history_query(patient_fname, patient_lname, patient_dob, fhir_version, script_version):
+    # use default configured NCPDP SCRIPT version if none given
+    script_version = script_version or client_config.SCRIPT_VERSION
+
     xml_body = None
     mock_url = client_config.SCRIPT_MOCK_URL
     if mock_url:
@@ -128,7 +133,7 @@ def rx_history_query(patient_fname, patient_lname, patient_dob, fhir_version):
 
     if not xml_body:
         api_endpoint = client_config.SCRIPT_ENDPOINT_URL
-        request_builder = RxRequest(url=api_endpoint)
+        request_builder = RxRequest(url=api_endpoint, script_version=script_version)
         request = request_builder.build_request(patient_fname, patient_lname, patient_dob)
         s = Session()
         response = s.send(request, **session_data)
@@ -136,7 +141,7 @@ def rx_history_query(patient_fname, patient_lname, patient_dob, fhir_version):
 
         xml_body = response.text
 
-    meds = parse_rx_history_response(xml_body, fhir_version)
+    meds = parse_rx_history_response(xml_body, fhir_version, script_version)
     return meds
 
 
