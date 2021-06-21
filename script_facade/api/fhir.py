@@ -35,7 +35,7 @@ def medication_order(fhir_version):
     current_app.logger.info("rx_history_query duration %s", timeit.default_timer() - rx_history_start_time)
 
     rx_nav_start_time = timeit.default_timer()
-    if current_app.config['RXNAV_LOOKUP_ENABLED']:
+    if False and current_app.config['RXNAV_LOOKUP_ENABLED']:
         med_order_bundle = add_rxnorm_coding(
             med_order_bundle,
             rxnav_url=current_app.config['RXNAV_URL'],
