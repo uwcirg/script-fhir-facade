@@ -35,6 +35,7 @@ class MedicationRequest(object):
         med_request.source_identifier = source_identifier
         med_request.authored_on = cls.authored_on_from_xml(med_dispensed)
 
+
         return med_request
 
 
@@ -43,6 +44,7 @@ class MedicationRequest(object):
         med_request = cls()
         med_request.medication = cls.med_cc_from_20170701_xml(med_dispensed)
         med_request.requester = cls.requester_from_20170701_xml(med_dispensed)
+        med_request.dispense_request = cls.dispense_request_from_20170701_xml(med_dispensed)
 
         return med_request
 
@@ -52,47 +54,8 @@ class MedicationRequest(object):
         med_order = cls()
         med_order.medication = cls.med_cc_from_106_xml(med_dispensed)
         med_order.requester = cls.requester_from_106_xml(med_dispensed)
+        med_order.dispense_request = cls.dispense_request_from_106_xml(med_dispensed)
 
-        dispense_request = {}
-        quantity_dispensed = med_dispensed.xpath('.//Quantity/Value/text()')[0]
-        if quantity_dispensed:
-            dispense_request.setdefault(
-                'quantity',
-                {'value': float(quantity_dispensed)},
-            )
-        expected_supply_duration = med_dispensed.xpath('.//DaysSupply/text()')[0]
-        if expected_supply_duration:
-            dispense_request.setdefault(
-                'expectedSupplyDuration',
-                {
-                    'value': float(expected_supply_duration),
-                    'unit': 'days',
-                    'system': 'http://unitsofmeasure.org',
-                    'code': 'd',
-                },
-            )
-        med_order.dispense_request = dispense_request
-
-        # todo: move these extensions to a separate MedicationDispense resource
-        pharmacy_name = med_dispensed.xpath('.//Pharmacy/StoreName/text()')[0]
-        if pharmacy_name:
-            dispense_request.setdefault('extension', [])
-            dispense_request['extension'].append(
-                {
-                    'url': 'http://cosri.org/fhir/pharmacy_name',
-                    'valueString': pharmacy_name,
-                }
-            )
-
-        last_fill = med_dispensed.xpath('.//LastFillDate/Date/text()')[0]
-        if last_fill:
-            dispense_request.setdefault('extension', [])
-            dispense_request['extension'].append(
-                {
-                    'url': 'http://cosri.org/fhir/last_fill',
-                    'valueDate': last_fill,
-                }
-            )
         return med_order
 
 
@@ -120,6 +83,94 @@ class MedicationRequest(object):
         # use contained resource, or save for other resource relationships?
         requester = {"display": " ".join((prescriber_fname, prescriber_lname))}
         return requester
+
+
+    @classmethod
+    def dispense_request_from_106_xml(cls, med_dispensed):
+        dispense_request = {}
+        quantity_dispensed = med_dispensed.xpath('.//Quantity/Value/text()')[0]
+        if quantity_dispensed:
+            dispense_request.setdefault(
+                'quantity',
+                {'value': float(quantity_dispensed)},
+            )
+        expected_supply_duration = med_dispensed.xpath('.//DaysSupply/text()')[0]
+        if expected_supply_duration:
+            dispense_request.setdefault(
+                'expectedSupplyDuration',
+                {
+                    'value': float(expected_supply_duration),
+                    'unit': 'days',
+                    'system': 'http://unitsofmeasure.org',
+                    'code': 'd',
+                },
+            )
+
+        # todo: move these extensions to a separate MedicationDispense resource
+        pharmacy_name = med_dispensed.xpath('.//Pharmacy/StoreName/text()')[0]
+        if pharmacy_name:
+            dispense_request.setdefault('extension', [])
+            dispense_request['extension'].append(
+                {
+                    'url': 'http://cosri.org/fhir/pharmacy_name',
+                    'valueString': pharmacy_name,
+                }
+            )
+
+        last_fill = med_dispensed.xpath('.//LastFillDate/Date/text()')[0]
+        if last_fill:
+            dispense_request.setdefault('extension', [])
+            dispense_request['extension'].append(
+                {
+                    'url': 'http://cosri.org/fhir/last_fill',
+                    'valueDate': last_fill,
+                }
+            )
+        return dispense_request
+
+
+    @classmethod
+    def dispense_request_from_20170701_xml(cls, med_dispensed):
+        dispense_request = {}
+        quantity_dispensed = med_dispensed.xpath('.//Quantity/Value/text()')[0]
+        if quantity_dispensed:
+            dispense_request.setdefault(
+                'quantity',
+                {'value': float(quantity_dispensed)},
+            )
+        expected_supply_duration = med_dispensed.xpath('.//DaysSupply/text()')[0]
+        if expected_supply_duration:
+            dispense_request.setdefault(
+                'expectedSupplyDuration',
+                {
+                    'value': float(expected_supply_duration),
+                    'unit': 'days',
+                    'system': 'http://unitsofmeasure.org',
+                    'code': 'd',
+                },
+            )
+
+        # todo: move these extensions to a separate MedicationDispense resource
+        pharmacy_name = med_dispensed.xpath('.//Pharmacy/BusinessName/text()')[0]
+        if pharmacy_name:
+            dispense_request.setdefault('extension', [])
+            dispense_request['extension'].append(
+                {
+                    'url': 'http://cosri.org/fhir/pharmacy_name',
+                    'valueString': pharmacy_name,
+                }
+            )
+
+        last_fill = med_dispensed.xpath('.//LastFillDate/Date/text()')[0]
+        if last_fill:
+            dispense_request.setdefault('extension', [])
+            dispense_request['extension'].append(
+                {
+                    'url': 'http://cosri.org/fhir/last_fill',
+                    'valueDate': last_fill,
+                }
+            )
+        return dispense_request
 
 
     @classmethod
