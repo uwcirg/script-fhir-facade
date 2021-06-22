@@ -122,12 +122,7 @@ def rx_history_query(patient_fname, patient_lname, patient_dob, fhir_version, sc
 
     xml_body = None
     mock_url = client_config.SCRIPT_MOCK_URL
-
-    with open("/opt/app/pdmp-20170701-response.xml", "r") as xml_file:
-        xml_body = xml_file.read()
-
-
-    if not xml_body and mock_url:
+    if mock_url:
         mock_base_url = mock_url.replace("github.com", "raw.githubusercontent.com")
         full_url = f"{mock_base_url}/main/pdmp-{patient_fname.lower()}-{patient_lname.lower()}-{patient_dob}.xml"
         with requests_cache.disabled():
