@@ -56,29 +56,34 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <Prescriber>
                 <NonVeterinarian>
                     <Identification>
-                        <DEANumber>AB9876543</DEANumber>
-                        <NPI>9999999999</NPI>
-                        <MutuallyDefined>PRESCRIBER123</MutuallyDefined>
+                        {% if DEA %}<DEANumber>{{DEA}}</DEANumber>{% endif %}
+                        {% if NPI %}<NPI>{{NPI}}</NPI>{% endif %}
+                        {% if MutuallyDefined %}<MutuallyDefined>{{MutuallyDefined}}</MutuallyDefined>{% endif %}
                     </Identification>
-                    <Specialty>Physician</Specialty>
+                    {% if Specialty %}<Specialty>{{Specialty}}</Specialty>{% endif %}
                     <PracticeLocation>
                         <BusinessName>TEST PRESCRIBER BUSINESS</BusinessName>
                     </PracticeLocation>
                     <Name>
-                        <LastName>DOE</LastName>
-                        <FirstName>JOHN</FirstName>
+                        <LastName>{{PrescriberLName}}</LastName>
+                        <FirstName>{{PrescriberFName}}</FirstName>
                     </Name>
+                    {% if PrescriberAddress1 and PrescriberAddress2 and PrescriberCity and PrescriberState and PrescriberZip %}
                     <Address>
-                        <AddressLine1>123 MAIN ST</AddressLine1>
-                        <City>AUBURN</City>
-                        <StateProvince>WA</StateProvince>
-                        <PostalCode>12345</PostalCode>
+                        <AddressLine1>{{PrescriberAddress1}}</AddressLine1>
+                        <AddressLine2>{{PrescriberAddress2}}</AddressLine2>
+                        <City>{{PrescriberCity}}</City>
+                        <StateProvince>{{PrescriberState}}</StateProvince>
+                        <PostalCode>{{PrescriberZip}}</PostalCode>
                     </Address>
+                    {% endif %}
+                    {% if ComNumber %}
                     <CommunicationNumbers>
                         <PrimaryTelephone>
-                            <Number>5551231234</Number>
+                            <Number>{{ComNumber}}</Number>
                         </PrimaryTelephone>
                     </CommunicationNumbers>
+                    {% endif %}
                 </NonVeterinarian>
             </Prescriber>
             <RequestedDates>
