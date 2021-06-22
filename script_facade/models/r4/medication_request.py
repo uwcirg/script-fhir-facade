@@ -34,6 +34,7 @@ class MedicationRequest(object):
 
         med_request.source_identifier = source_identifier
         med_request.authored_on = cls.authored_on_from_xml(med_dispensed)
+
         return med_request
 
 
@@ -41,6 +42,7 @@ class MedicationRequest(object):
     def from_20170701_xml(cls, med_dispensed):
         med_request = cls()
         med_request.medication = cls.med_cc_from_20170701_xml(med_dispensed)
+        med_request.requester = cls.requester_from_20170701_xml(med_dispensed)
 
         return med_request
 
@@ -49,15 +51,7 @@ class MedicationRequest(object):
     def from_106_xml(cls, med_dispensed):
         med_order = cls()
         med_order.medication = cls.med_cc_from_106_xml(med_dispensed)
-
-
-        prescriber_fname = med_dispensed.xpath('.//Prescriber/Name/FirstName/text()')[0]
-        prescriber_lname = med_dispensed.xpath('.//Prescriber/Name/LastName/text()')[0]
-        # use contained resource, or save for other resource relationships?
-        requester = {
-            "display": " ".join((prescriber_fname, prescriber_lname))
-        }
-        med_order.requester = requester
+        med_order.requester = cls.requester_from_106_xml(med_dispensed)
 
         dispense_request = {}
         quantity_dispensed = med_dispensed.xpath('.//Quantity/Value/text()')[0]
@@ -104,9 +98,28 @@ class MedicationRequest(object):
 
     @classmethod
     def authored_on_from_xml(cls, med_dispensed):
-
         authored_on = med_dispensed.xpath('.//WrittenDate/Date/text()')[0]
         return authored_on
+
+
+    @classmethod
+    def requester_from_106_xml(cls, med_dispensed):
+        prescriber_fname = med_dispensed.xpath('.//Prescriber/Name/FirstName/text()')[0]
+        prescriber_lname = med_dispensed.xpath('.//Prescriber/Name/LastName/text()')[0]
+
+        # use contained resource, or save for other resource relationships?
+        requester = {"display": " ".join((prescriber_fname, prescriber_lname))}
+        return requester
+
+
+    @classmethod
+    def requester_from_20170701_xml(cls, med_dispensed):
+        prescriber_fname = med_dispensed.xpath('.//Prescriber/NonVeterinarian/Name/FirstName/text()')[0]
+        prescriber_lname = med_dispensed.xpath('.//Prescriber/NonVeterinarian/Name/LastName/text()')[0]
+
+        # use contained resource, or save for other resource relationships?
+        requester = {"display": " ".join((prescriber_fname, prescriber_lname))}
+        return requester
 
 
     @classmethod
