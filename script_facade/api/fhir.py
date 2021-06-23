@@ -1,4 +1,6 @@
+import csv
 from flask import Blueprint, request, current_app
+import io
 import timeit
 
 from script_facade.client.client_106 import rx_history_query, patient_lookup_query
@@ -57,3 +59,38 @@ def patient_search(fhir_version):
 
     patient_bundle = patient_lookup_query(patient_fname, patient_lname, patient_dob)
     return patient_bundle
+
+
+@blueprint.route('/upload/patient/csv', methods=['POST'])
+def upload_patient_csv():
+    """Given a CSV file (via request.files) upload contents"""
+
+    def decode_file(binary_data):
+        """Convert binary file data to file like string buffer
+
+        Flask reads in multipart files as binary, which the csv lib can't
+        handle.
+
+        :returns: StringIO buffer of utf-8 decoded strings for file like use
+        """
+        buffer = io.StringIO()
+        last_pos = binary_data.tell()
+        while True:
+            line = binary_data.readline()
+            pos = binary_data.tell()
+            if pos == last_pos:
+                # Position stops progressing at EOF
+                break
+            last_pos = pos
+            buffer.write(line.decode('utf-8'))
+
+        buffer.seek(0)
+        return buffer
+
+    contents = request.files['file']
+    csv.register_dialect('generic', skipinitialspace=True)
+    reader = csv.DictReader(decode_file(contents), dialect='generic')
+    for row in reader:
+        if 'provider_last_name' in row:
+            # Upsert provider
+            pass

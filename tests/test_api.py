@@ -1,3 +1,4 @@
+import os
 import pytest
 from conftest import load_json
 
@@ -20,3 +21,12 @@ def test_medication_order(client, mocker, med_order_bundle):
         }
       )
     assert response.status_code == 200
+
+
+def test_upload_patient(client, datadir):
+    file = open(os.path.join(datadir, 'patients.csv'), 'rb')
+    data = {'filename': 'patients.csv', 'file': file}
+    client.post(
+        '/upload/patient/csv',
+        content_type='multipart/form-data',
+        data=data)
