@@ -19,21 +19,21 @@ class Patient(object):
         patient = cls()
         patient_fhir = {}
 
-        given_name = patient_xml.xpath('./script:Name/script:FirstName/text()', namespaces=ns)[0]
+        given_name = patient_xml.xpath('./*[local-name()="Name"]/*[local-name()="FirstName"]/text()', namespaces=ns)[0]
         if given_name:
             patient.given_name = given_name
 
-        family_name = patient_xml.xpath('./script:Name/script:LastName/text()', namespaces=ns)[0]
+        family_name = patient_xml.xpath('./*[local-name()="Name"]/*[local-name()="LastName"]/text()', namespaces=ns)[0]
         if family_name:
             patient.family_name = family_name
 
 
-        gender = patient_xml.xpath('./script:Gender/text()', namespaces=ns)[0]
+        gender = patient_xml.xpath('./*[local-name()="Gender"]/text()', namespaces=ns)[0]
         if gender:
             gender_map = {'m': 'male', 'f': 'female'}
             patient.gender = gender_map[gender[0].lower()]
 
-        birthdate = patient_xml.xpath('./script:DateOfBirth/script:Date/text()', namespaces=ns)[0]
+        birthdate = patient_xml.xpath('./*[local-name()="DateOfBirth"]/*[local-name()="Date"]/text()', namespaces=ns)[0]
         if birthdate:
             patient.birthdate = birthdate
 
