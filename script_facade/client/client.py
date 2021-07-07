@@ -103,10 +103,16 @@ def parse_rx_history_response(xml_string, fhir_version, script_version):
     return as_bundle(meds, bundle_type='searchset')
 
 
-def parse_patient_lookup_query(xml_string):
+def parse_patient_lookup_query(xml_string, script_version):
     # LXML infers encoding from XML metadata
     root = ET.fromstring(xml_string.encode('utf-8'))
-    patient_elements = root.xpath('//script:Patient', namespaces=SCRIPT_NAMESPACE)
+
+    patient_script_version_map = {
+        '106': '//script:Patient',
+        '20170701': '//HumanPatient',
+    }
+
+    patient_elements = root.xpath(patient_script_version_map[script_version], namespaces=SCRIPT_NAMESPACE)
 
     patients = []
     for patient_element in patient_elements:
@@ -145,7 +151,10 @@ def rx_history_query(patient_fname, patient_lname, patient_dob, fhir_version, sc
     return meds
 
 
-def patient_lookup_query(first_name, last_name, date_of_birth):
+def patient_lookup_query(first_name, last_name, date_of_birth, script_version):
+    # use default configured NCPDP SCRIPT version if none given
+    script_version = script_version or client_config.SCRIPT_VERSION
+
     xml_body = None
     mock_url = client_config.SCRIPT_MOCK_URL
     if mock_url:
@@ -167,5 +176,5 @@ def patient_lookup_query(first_name, last_name, date_of_birth):
 
         xml_body = response.text
 
-    patient_bundle = parse_patient_lookup_query(xml_body)
+    patient_bundle = parse_patient_lookup_query(xml_body, script_version)
     return patient_bundle

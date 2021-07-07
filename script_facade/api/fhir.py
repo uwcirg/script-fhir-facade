@@ -58,5 +58,7 @@ def patient_search(fhir_version):
     if not all((patient_fname, patient_lname, patient_dob)):
         return 'Required parameters not given', 400
 
-    patient_bundle = patient_lookup_query(patient_fname, patient_lname, patient_dob)
+    script_version = request.args.get('script_version')
+
+    patient_bundle = patient_lookup_query(patient_fname, patient_lname, patient_dob, script_version)
     return patient_bundle
