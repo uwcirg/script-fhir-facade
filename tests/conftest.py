@@ -12,6 +12,12 @@ def load_json(datadir, filename):
     return data
 
 
+def load_xml(datadir, filename):
+    with open(os.path.join(datadir, filename), 'r') as xml_file:
+        data = xml_file.read()
+    return data
+
+
 class MockJsonResponse:
     """Given data, present behind `json()` attribute"""
     def __init__(self, data):
