@@ -29,8 +29,7 @@ class MedicationRequest(object):
         elif script_version == "20170701":
             med_request = cls.from_20170701_xml(med_dispensed)
         else:
-            # TODO raise exception
-            pass
+            raise ValueError(f"Unsupported SCRIPT version: {script_version}")
 
         med_request.source_identifier = source_identifier
         med_request.authored_on = cls.authored_on_from_xml(med_dispensed)
