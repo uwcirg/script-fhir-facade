@@ -168,7 +168,7 @@ def patient_lookup_query(first_name, last_name, date_of_birth, script_version):
 
     if not xml_body:
         api_endpoint = client_config.SCRIPT_ENDPOINT_URL
-        request_builder = RxRequest(url=api_endpoint)
+        request_builder = RxRequest(url=api_endpoint, script_version=script_version)
         request = request_builder.build_request(first_name, last_name, date_of_birth)
         s = Session()
         response = s.send(request, **session_data)
