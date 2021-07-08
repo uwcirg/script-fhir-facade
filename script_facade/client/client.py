@@ -130,7 +130,7 @@ def rx_history_query(patient_fname, patient_lname, patient_dob, fhir_version, sc
     mock_url = client_config.SCRIPT_MOCK_URL
     if mock_url:
         mock_base_url = mock_url.replace("github.com", "raw.githubusercontent.com")
-        full_url = f"{mock_base_url}/main/{script_version}/pdmp-{patient_fname.lower()}-{patient_lname.lower()}-{patient_dob}.xml"
+        full_url = f"{mock_base_url}/main/{script_version}/{patient_fname.lower()}-{patient_lname.lower()}-{patient_dob}.xml"
         with requests_cache.disabled():
             response = requests.get(full_url)
 
@@ -159,7 +159,7 @@ def patient_lookup_query(first_name, last_name, date_of_birth, script_version):
     mock_url = client_config.SCRIPT_MOCK_URL
     if mock_url:
         mock_base_url = mock_url.replace("github.com", "raw.githubusercontent.com")
-        full_url = f"{mock_base_url}/main/{script_version}/pdmp-{first_name.lower()}-{last_name.lower()}-{date_of_birth}.xml"
+        full_url = f"{mock_base_url}/main/{script_version}/{first_name.lower()}-{last_name.lower()}-{date_of_birth}.xml"
         with requests_cache.disabled():
             response = requests.get(full_url)
 
