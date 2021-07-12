@@ -6,7 +6,7 @@ from requests import Request, Session
 
 from script_facade.models.r1.bundle import as_bundle
 from script_facade.models.r1.medication_order import MedicationOrder
-from script_facade.models.r4.medication_request import MedicationRequest
+from script_facade.models.r4.medication_request import medication_request_factory
 
 from script_facade.models.r1.patient import Patient
 from .config import DefaultConfig as client_config
@@ -91,13 +91,13 @@ def parse_rx_history_response(xml_string, fhir_version, script_version):
     med_fhir_version_map = {
         'r1': MedicationOrder,
         'r2': MedicationOrder,
-        'r4': MedicationRequest,
+        'r4': medication_request_factory,
     }
-    med_cls = med_fhir_version_map[fhir_version]
+    med_parser = med_fhir_version_map[fhir_version](script_version, client_config.RX_SRC_ID)
 
     meds = []
     for med_element in meds_elements:
-        meds.append(med_cls.from_xml(med_element, client_config.RX_SRC_ID, script_version=script_version))
+        meds.append(med_parser.from_xml(med_element))
 
     meds = [m.as_fhir() for m in meds]
     return as_bundle(meds, bundle_type='searchset')

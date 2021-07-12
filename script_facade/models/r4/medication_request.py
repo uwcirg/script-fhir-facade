@@ -4,8 +4,21 @@ drug_code_system_map = {
     'ND': 'http://hl7.org/fhir/sid/ndc'
 }
 
+
+def medication_request_factory(script_version, xml_namespaces=None):
+    """Factory method to return versioned MedicationRequest instance"""
+    if script_version == '106':
+        return MedicationRequest106(xml_namespaces)
+    elif script_version == '20170701':
+        return MedicationRequest20170701(xml_namespaces)
+    else:
+        raise ValueError(f"unsupported script_version: f{script_version}")
+
+
 class MedicationRequest(object):
-    def __init__(self, xml_namespaces=None):
+    """Base class for MedicationRequest version implementations"""
+
+    def __init__(self, xml_namespaces):
         # required attribute
         # https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.medication_x_
         self.medication = None
@@ -18,49 +31,6 @@ class MedicationRequest(object):
         self.xml_namespaces = xml_namespaces
         self.ns_prefix = next(iter(xml_namespaces.keys())) + ":" if xml_namespaces else ""
 
-    @classmethod
-    def from_xml(cls, med_dispensed, source_identifier, script_version, xml_namespaces=None):
-        """Build a MedicationRequest from a MedicationDispensed xml element object
-
-        :param med_dispensed: MedicationDispensed xml element object
-
-        """
-
-        # wrap version-specific extraction methods
-        if script_version == "106":
-            med_request = cls.from_106_xml(med_dispensed, xml_namespaces=xml_namespaces)
-        elif script_version == "20170701":
-            med_request = cls.from_20170701_xml(med_dispensed)
-        else:
-            raise ValueError(f"Unsupported SCRIPT version: {script_version}")
-
-        med_request.source_identifier = source_identifier
-        med_request.authored_on = med_request.authored_on_from_xml(med_dispensed)
-
-
-        return med_request
-
-
-    @classmethod
-    def from_20170701_xml(cls, med_dispensed):
-        med_request = cls()
-        med_request.medication = med_request.med_cc_from_20170701_xml(med_dispensed)
-        med_request.requester = med_request.requester_from_20170701_xml(med_dispensed)
-        med_request.dispense_request = med_request.dispense_request_from_20170701_xml(med_dispensed)
-
-        return med_request
-
-
-    @classmethod
-    def from_106_xml(cls, med_dispensed, xml_namespaces):
-        med_order = cls(xml_namespaces=xml_namespaces)
-        med_order.medication = med_order.med_cc_from_106_xml(med_dispensed)
-        med_order.requester = med_order.requester_from_106_xml(med_dispensed)
-        med_order.dispense_request = med_order.dispense_request_from_106_xml(med_dispensed)
-
-        return med_order
-
-
     def authored_on_from_xml(self, med_dispensed):
         authored_on = med_dispensed.xpath(
             _path=f'.//{self.ns_prefix}WrittenDate/{self.ns_prefix}Date/text()',
@@ -68,8 +38,71 @@ class MedicationRequest(object):
         )[0]
         return authored_on
 
+    def __str__(self):
+        return str(self.as_fhir())
 
-    def requester_from_106_xml(self, med_dispensed):
+    def as_fhir(self):
+        fhir_json = {
+            'resourceType': 'MedicationRequest',
+            'identifier': [{'system': self.source_identifier}],
+            'authoredOn': self.authored_on,
+            'medicationCodeableConcept': self.medication,
+            'dispenseRequest': self.dispense_request,
+            'requester': self.requester,
+        }
+        # filter out unset attributes
+        filtered_fhir_json = {k:v for k, v in fhir_json.items() if v}
+        return filtered_fhir_json
+
+
+class MedicationRequest106(MedicationRequest):
+
+    def from_xml(self, med_dispensed):
+        self.medication = self.med_cc_from_xml(med_dispensed)
+        self.requester = self.requester_from_xml(med_dispensed)
+        self.dispense_request = self.dispense_request_from_xml(med_dispensed)
+
+        self.authored_on = self.authored_on_from_xml(med_dispensed)
+        return self
+
+    def med_cc_from_xml(self, med_dispensed):
+        drug_description = med_dispensed.xpath(
+            _path=f'.//{self.ns_prefix}DrugDescription/text()',
+            namespaces=self.xml_namespaces
+        )[0]
+
+        drug_coded = med_dispensed.xpath(
+            _path=f'.//{self.ns_prefix}DrugCoded',
+            namespaces=self.xml_namespaces
+        )[0]
+
+        product_code = drug_coded.xpath(
+            _path=f'.//{self.ns_prefix}ProductCode/text()',
+            namespaces=self.xml_namespaces
+        )[0]
+
+        product_code_qualifier = drug_coded.xpath(
+            _path=f'.//{self.ns_prefix}ProductCodeQualifier/text()',
+            namespaces=self.xml_namespaces
+        )[0]
+
+        # attempt code system lookup
+        product_code_qualifier = drug_code_system_map.get(product_code_qualifier, product_code_qualifier)
+
+        # element no longer present in OHP PDMP response
+        #strength = drug_coded.xpath('.//*[local-name()="Strength"]')[0].text
+
+        med_cc = {
+            'coding': [{
+                'system': product_code_qualifier,
+                'code': product_code,
+                'display': drug_description,
+            }],
+            'text': drug_description,
+        }
+        return med_cc
+
+    def requester_from_xml(self, med_dispensed):
         prescriber_fname = med_dispensed.xpath(
             _path=f'.//{self.ns_prefix}Prescriber/{self.ns_prefix}Name/{self.ns_prefix}FirstName/text()',
             namespaces=self.xml_namespaces
@@ -84,18 +117,7 @@ class MedicationRequest(object):
         requester = {"display": " ".join((prescriber_fname, prescriber_lname))}
         return requester
 
-
-    @classmethod
-    def requester_from_20170701_xml(cls, med_dispensed):
-        prescriber_fname = med_dispensed.xpath('.//Prescriber/NonVeterinarian/Name/FirstName/text()')[0]
-        prescriber_lname = med_dispensed.xpath('.//Prescriber/NonVeterinarian/Name/LastName/text()')[0]
-
-        # use contained resource, or save for other resource relationships?
-        requester = {"display": " ".join((prescriber_fname, prescriber_lname))}
-        return requester
-
-
-    def dispense_request_from_106_xml(self, med_dispensed):
+    def dispense_request_from_xml(self, med_dispensed):
         dispense_request = {}
 
         quantity_dispensed = med_dispensed.xpath(
@@ -152,7 +174,48 @@ class MedicationRequest(object):
         return dispense_request
 
 
-    def dispense_request_from_20170701_xml(self, med_dispensed):
+class MedicationRequest20170701(MedicationRequest):
+
+    def from_xml(self, med_dispensed):
+        self.medication = self.med_cc_from_xml(med_dispensed)
+        self.requester = self.requester_from_xml(med_dispensed)
+        self.dispense_request = self.dispense_request_from_xml(med_dispensed)
+        self.authored_on = self.authored_on_from_xml(med_dispensed)
+        return self
+
+    def med_cc_from_xml(self, med_dispensed):
+        drug_description = med_dispensed.xpath('.//DrugDescription/text()')[0]
+
+        drug_coded = med_dispensed.xpath('.//DrugCoded')[0]
+        product_code = drug_coded.xpath('.//ProductCode/Code/text()')[0]
+        product_code_qualifier = drug_coded.xpath('.//ProductCode/Qualifier/text()')[0]
+
+        # attempt code system lookup
+        product_code_qualifier = drug_code_system_map.get(product_code_qualifier, product_code_qualifier)
+
+        # element no longer present in OHP PDMP response
+        #strength = drug_coded.xpath('.//*[local-name()="Strength"]')[0].text
+
+        #med_order.authored_on = med_dispensed.xpath('.//WrittenDate/Date/text()')[0]
+        med_cc = {
+            'coding': [{
+                'system': product_code_qualifier,
+                'code': product_code,
+                'display': drug_description,
+            }],
+            'text': drug_description,
+        }
+        return med_cc
+
+    def requester_from_xml(self, med_dispensed):
+        prescriber_fname = med_dispensed.xpath('.//Prescriber/NonVeterinarian/Name/FirstName/text()')[0]
+        prescriber_lname = med_dispensed.xpath('.//Prescriber/NonVeterinarian/Name/LastName/text()')[0]
+
+        # use contained resource, or save for other resource relationships?
+        requester = {"display": " ".join((prescriber_fname, prescriber_lname))}
+        return requester
+
+    def dispense_request_from_xml(self, med_dispensed):
         dispense_request = {}
         quantity_dispensed = med_dispensed.xpath('.//Quantity/Value/text()')[0]
         if quantity_dispensed:
@@ -193,83 +256,3 @@ class MedicationRequest(object):
                 }
             )
         return dispense_request
-
-
-    def med_cc_from_106_xml(self, med_dispensed):
-        drug_description = med_dispensed.xpath(
-            _path=f'.//{self.ns_prefix}DrugDescription/text()',
-            namespaces=self.xml_namespaces
-        )[0]
-
-        drug_coded = med_dispensed.xpath(
-            _path=f'.//{self.ns_prefix}DrugCoded',
-            namespaces=self.xml_namespaces
-        )[0]
-
-        product_code = drug_coded.xpath(
-            _path=f'.//{self.ns_prefix}ProductCode/text()',
-            namespaces=self.xml_namespaces
-        )[0]
-
-        product_code_qualifier = drug_coded.xpath(
-            _path=f'.//{self.ns_prefix}ProductCodeQualifier/text()',
-            namespaces=self.xml_namespaces
-        )[0]        
-
-        # attempt code system lookup
-        product_code_qualifier = drug_code_system_map.get(product_code_qualifier, product_code_qualifier)
-
-        # element no longer present in OHP PDMP response
-        #strength = drug_coded.xpath('.//*[local-name()="Strength"]')[0].text
-
-        med_cc = {
-            'coding': [{
-                'system': product_code_qualifier,
-                'code': product_code,
-                'display': drug_description,
-            }],
-            'text': drug_description,
-        }
-        return med_cc
-
-
-    def med_cc_from_20170701_xml(self, med_dispensed):
-        drug_description = med_dispensed.xpath('.//DrugDescription/text()')[0]
-
-        drug_coded = med_dispensed.xpath('.//DrugCoded')[0]
-        product_code = drug_coded.xpath('.//ProductCode/Code/text()')[0]
-        product_code_qualifier = drug_coded.xpath('.//ProductCode/Qualifier/text()')[0]
-
-        # attempt code system lookup
-        product_code_qualifier = drug_code_system_map.get(product_code_qualifier, product_code_qualifier)
-
-        # element no longer present in OHP PDMP response
-        #strength = drug_coded.xpath('.//*[local-name()="Strength"]')[0].text
-
-        #med_order.authored_on = med_dispensed.xpath('.//WrittenDate/Date/text()')[0]
-        med_cc = {
-            'coding': [{
-                'system': product_code_qualifier,
-                'code': product_code,
-                'display': drug_description,
-            }],
-            'text': drug_description,
-        }
-        return med_cc
-
-
-    def __str__(self):
-        return str(self.as_fhir())
-
-    def as_fhir(self):
-        fhir_json = {
-            'resourceType': 'MedicationRequest',
-            'identifier': [{'system': self.source_identifier}],
-            'authoredOn': self.authored_on,
-            'medicationCodeableConcept': self.medication,
-            'dispenseRequest': self.dispense_request,
-            'requester': self.requester,
-        }
-        # filter out unset attributes
-        filtered_fhir_json = {k:v for k, v in fhir_json.items() if v}
-        return filtered_fhir_json
