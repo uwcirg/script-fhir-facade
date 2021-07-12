@@ -5,7 +5,7 @@ drug_code_system_map = {
 }
 
 class MedicationRequest(object):
-    def __init__(self):
+    def __init__(self, xml_namespaces=None):
         # required attribute
         # https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.medication_x_
         self.medication = None
@@ -15,8 +15,11 @@ class MedicationRequest(object):
         self.requester = None
         self.source_identifier = None
 
+        self.xml_namespaces = xml_namespaces
+        self.ns_prefix = next(iter(xml_namespaces.keys())) + ":" if xml_namespaces else ""
+
     @classmethod
-    def from_xml(cls, med_dispensed, source_identifier, script_version):
+    def from_xml(cls, med_dispensed, source_identifier, script_version, xml_namespaces=None):
         """Build a MedicationRequest from a MedicationDispensed xml element object
 
         :param med_dispensed: MedicationDispensed xml element object
@@ -25,14 +28,14 @@ class MedicationRequest(object):
 
         # wrap version-specific extraction methods
         if script_version == "106":
-            med_request = cls.from_106_xml(med_dispensed)
+            med_request = cls.from_106_xml(med_dispensed, xml_namespaces=xml_namespaces)
         elif script_version == "20170701":
             med_request = cls.from_20170701_xml(med_dispensed)
         else:
             raise ValueError(f"Unsupported SCRIPT version: {script_version}")
 
         med_request.source_identifier = source_identifier
-        med_request.authored_on = cls.authored_on_from_xml(med_dispensed)
+        med_request.authored_on = med_request.authored_on_from_xml(med_dispensed)
 
 
         return med_request
@@ -41,33 +44,41 @@ class MedicationRequest(object):
     @classmethod
     def from_20170701_xml(cls, med_dispensed):
         med_request = cls()
-        med_request.medication = cls.med_cc_from_20170701_xml(med_dispensed)
-        med_request.requester = cls.requester_from_20170701_xml(med_dispensed)
-        med_request.dispense_request = cls.dispense_request_from_20170701_xml(med_dispensed)
+        med_request.medication = med_request.med_cc_from_20170701_xml(med_dispensed)
+        med_request.requester = med_request.requester_from_20170701_xml(med_dispensed)
+        med_request.dispense_request = med_request.dispense_request_from_20170701_xml(med_dispensed)
 
         return med_request
 
 
     @classmethod
-    def from_106_xml(cls, med_dispensed):
-        med_order = cls()
-        med_order.medication = cls.med_cc_from_106_xml(med_dispensed)
-        med_order.requester = cls.requester_from_106_xml(med_dispensed)
-        med_order.dispense_request = cls.dispense_request_from_106_xml(med_dispensed)
+    def from_106_xml(cls, med_dispensed, xml_namespaces):
+        med_order = cls(xml_namespaces=xml_namespaces)
+        med_order.medication = med_order.med_cc_from_106_xml(med_dispensed)
+        med_order.requester = med_order.requester_from_106_xml(med_dispensed)
+        med_order.dispense_request = med_order.dispense_request_from_106_xml(med_dispensed)
 
         return med_order
 
 
-    @classmethod
-    def authored_on_from_xml(cls, med_dispensed):
-        authored_on = med_dispensed.xpath('.//WrittenDate/Date/text()')[0]
+    def authored_on_from_xml(self, med_dispensed):
+        authored_on = med_dispensed.xpath(
+            _path=f'.//{self.ns_prefix}WrittenDate/{self.ns_prefix}Date/text()',
+            namespaces=self.xml_namespaces
+        )[0]
         return authored_on
 
 
-    @classmethod
-    def requester_from_106_xml(cls, med_dispensed):
-        prescriber_fname = med_dispensed.xpath('.//Prescriber/Name/FirstName/text()')[0]
-        prescriber_lname = med_dispensed.xpath('.//Prescriber/Name/LastName/text()')[0]
+    def requester_from_106_xml(self, med_dispensed):
+        prescriber_fname = med_dispensed.xpath(
+            _path=f'.//{self.ns_prefix}Prescriber/{self.ns_prefix}Name/{self.ns_prefix}FirstName/text()',
+            namespaces=self.xml_namespaces
+        )[0]
+
+        prescriber_lname = med_dispensed.xpath(
+            _path=f'.//{self.ns_prefix}Prescriber/{self.ns_prefix}Name/{self.ns_prefix}LastName/text()',
+            namespaces=self.xml_namespaces
+        )[0]
 
         # use contained resource, or save for other resource relationships?
         requester = {"display": " ".join((prescriber_fname, prescriber_lname))}
@@ -84,16 +95,23 @@ class MedicationRequest(object):
         return requester
 
 
-    @classmethod
-    def dispense_request_from_106_xml(cls, med_dispensed):
+    def dispense_request_from_106_xml(self, med_dispensed):
         dispense_request = {}
-        quantity_dispensed = med_dispensed.xpath('.//Quantity/Value/text()')[0]
+
+        quantity_dispensed = med_dispensed.xpath(
+            _path=f'.//{self.ns_prefix}Quantity/{self.ns_prefix}Value/text()',
+            namespaces=self.xml_namespaces
+        )[0]
         if quantity_dispensed:
             dispense_request.setdefault(
                 'quantity',
                 {'value': float(quantity_dispensed)},
             )
-        expected_supply_duration = med_dispensed.xpath('.//DaysSupply/text()')[0]
+
+        expected_supply_duration = med_dispensed.xpath(
+            _path=f'.//{self.ns_prefix}DaysSupply/text()',
+            namespaces=self.xml_namespaces
+        )[0]
         if expected_supply_duration:
             dispense_request.setdefault(
                 'expectedSupplyDuration',
@@ -106,7 +124,10 @@ class MedicationRequest(object):
             )
 
         # todo: move these extensions to a separate MedicationDispense resource
-        pharmacy_name = med_dispensed.xpath('.//Pharmacy/StoreName/text()')[0]
+        pharmacy_name = med_dispensed.xpath(
+            _path=f'.//{self.ns_prefix}Pharmacy/{self.ns_prefix}StoreName/text()',
+            namespaces=self.xml_namespaces
+        )[0]
         if pharmacy_name:
             dispense_request.setdefault('extension', [])
             dispense_request['extension'].append(
@@ -116,7 +137,10 @@ class MedicationRequest(object):
                 }
             )
 
-        last_fill = med_dispensed.xpath('.//LastFillDate/Date/text()')[0]
+        last_fill = med_dispensed.xpath(
+            _path=f'.//{self.ns_prefix}LastFillDate/{self.ns_prefix}Date/text()',
+            namespaces=self.xml_namespaces
+        )[0]
         if last_fill:
             dispense_request.setdefault('extension', [])
             dispense_request['extension'].append(
@@ -128,8 +152,7 @@ class MedicationRequest(object):
         return dispense_request
 
 
-    @classmethod
-    def dispense_request_from_20170701_xml(cls, med_dispensed):
+    def dispense_request_from_20170701_xml(self, med_dispensed):
         dispense_request = {}
         quantity_dispensed = med_dispensed.xpath('.//Quantity/Value/text()')[0]
         if quantity_dispensed:
@@ -172,16 +195,26 @@ class MedicationRequest(object):
         return dispense_request
 
 
-    @classmethod
-    def med_cc_from_106_xml(cls, med_dispensed):
-        # todo: separate finding/extract into separate steps
-        drug_description = med_dispensed.xpath('.//DrugDescription/text()')[0]
+    def med_cc_from_106_xml(self, med_dispensed):
+        drug_description = med_dispensed.xpath(
+            _path=f'.//{self.ns_prefix}DrugDescription/text()',
+            namespaces=self.xml_namespaces
+        )[0]
 
+        drug_coded = med_dispensed.xpath(
+            _path=f'.//{self.ns_prefix}DrugCoded',
+            namespaces=self.xml_namespaces
+        )[0]
 
-        drug_coded = med_dispensed.xpath('.//DrugCoded')[0]
-        product_code = drug_coded.xpath('.//ProductCode/text()')[0]
-        product_code_qualifier = drug_coded.xpath('.//ProductCodeQualifier/text()')[0]
+        product_code = drug_coded.xpath(
+            _path=f'.//{self.ns_prefix}ProductCode/text()',
+            namespaces=self.xml_namespaces
+        )[0]
 
+        product_code_qualifier = drug_coded.xpath(
+            _path=f'.//{self.ns_prefix}ProductCodeQualifier/text()',
+            namespaces=self.xml_namespaces
+        )[0]        
 
         # attempt code system lookup
         product_code_qualifier = drug_code_system_map.get(product_code_qualifier, product_code_qualifier)
@@ -200,8 +233,7 @@ class MedicationRequest(object):
         return med_cc
 
 
-    @classmethod
-    def med_cc_from_20170701_xml(cls, med_dispensed):
+    def med_cc_from_20170701_xml(self, med_dispensed):
         drug_description = med_dispensed.xpath('.//DrugDescription/text()')[0]
 
         drug_coded = med_dispensed.xpath('.//DrugCoded')[0]
