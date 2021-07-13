@@ -1,4 +1,6 @@
 """Client for NCPDP SCRIPT Standard version 10.6"""
+from datetime import datetime
+
 from lxml import etree as ET
 import requests_cache
 import requests
@@ -7,7 +9,6 @@ from requests import Request, Session
 from script_facade.models.r1.bundle import as_bundle
 from script_facade.models.r1.medication_order import MedicationOrder
 from script_facade.models.r4.medication_request import medication_request_factory, SCRIPT_NAMESPACE
-
 from script_facade.models.r1.patient import Patient
 from .config import DefaultConfig as client_config
 
@@ -20,6 +21,15 @@ session_data = {
         client_config.SCRIPT_CLIENT_PRIVATE_KEY,
     ),
 }
+
+
+def subtract_years(dt, years):
+    """Subtract given years from given date, handling leap day gracefully"""
+    try:
+        dt = dt.replace(year=dt.year-years)
+    except ValueError:
+        dt = dt.replace(year=dt.year-years, day=dt.day-1)
+    return dt
 
 
 class RxRequest(object):
@@ -39,6 +49,9 @@ class RxRequest(object):
         return prepped
 
     def request_body(self, patient_fname, patient_lname, patient_dob):
+
+        today = datetime.now()
+        two_years_ago = subtract_years(dt=today, years=2)
 
         template_vars = {
             'FromQualifier': client_config.SCRIPT_CLIENT_QUALIFIER,
@@ -68,6 +81,8 @@ class RxRequest(object):
             'BenEffectiveDate': '2012-01-01',
             'BenExpirationDate': '2019-12-11',
             'BenConsent': 'Y',
+            'StartDate': two_years_ago.strftime('%Y-%m-%d'),
+            'EndDate': today.strftime('%Y-%m-%d'),
         }
         template_env = client_config.configure_templates()
         template = template_env.get_template(f'request_{self.script_version}.xml')
