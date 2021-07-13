@@ -4,13 +4,15 @@ drug_code_system_map = {
     'ND': 'http://hl7.org/fhir/sid/ndc'
 }
 
+SCRIPT_NAMESPACE = {'script': 'http://www.ncpdp.org/schema/SCRIPT'}
 
-def medication_request_factory(script_version, source_identifier, xml_namespaces=None):
+
+def medication_request_factory(script_version, source_identifier):
     """Factory method to return versioned MedicationRequest instance"""
     if script_version == '106':
-        return MedicationRequest106(source_identifier, xml_namespaces)
+        return MedicationRequest106(source_identifier, xml_namespaces=SCRIPT_NAMESPACE)
     elif script_version == '20170701':
-        return MedicationRequest20170701(source_identifier, xml_namespaces)
+        return MedicationRequest20170701(source_identifier)
     else:
         raise ValueError(f"unsupported script_version: f{script_version}")
 
@@ -18,7 +20,7 @@ def medication_request_factory(script_version, source_identifier, xml_namespaces
 class MedicationRequest(object):
     """Base class for MedicationRequest version implementations"""
 
-    def __init__(self, source_identifier, xml_namespaces):
+    def __init__(self, source_identifier, xml_namespaces=None):
         # required attribute
         # https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.medication_x_
         self.medication = None
