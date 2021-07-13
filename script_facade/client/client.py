@@ -6,12 +6,10 @@ from requests import Request, Session
 
 from script_facade.models.r1.bundle import as_bundle
 from script_facade.models.r1.medication_order import MedicationOrder
-from script_facade.models.r4.medication_request import medication_request_factory
+from script_facade.models.r4.medication_request import medication_request_factory, SCRIPT_NAMESPACE
 
 from script_facade.models.r1.patient import Patient
 from .config import DefaultConfig as client_config
-
-SCRIPT_NAMESPACE = {'script': 'http://www.ncpdp.org/schema/SCRIPT'}
 
 # data to configure Session
 session_data = {
