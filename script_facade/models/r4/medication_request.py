@@ -36,6 +36,7 @@ class MedicationRequest(object):
             _path=f'.//{self.ns_prefix}WrittenDate/{self.ns_prefix}Date/text()',
             namespaces=self.xml_namespaces
         )[0]
+        self.authored_on = authored_on
         return authored_on
 
     def __str__(self):
@@ -58,11 +59,11 @@ class MedicationRequest(object):
 class MedicationRequest106(MedicationRequest):
 
     def from_xml(self, med_dispensed):
-        self.medication = self.med_cc_from_xml(med_dispensed)
-        self.requester = self.requester_from_xml(med_dispensed)
-        self.dispense_request = self.dispense_request_from_xml(med_dispensed)
+        self.med_cc_from_xml(med_dispensed)
+        self.requester_from_xml(med_dispensed)
+        self.dispense_request_from_xml(med_dispensed)
 
-        self.authored_on = self.authored_on_from_xml(med_dispensed)
+        self.authored_on_from_xml(med_dispensed)
         return self
 
     def med_cc_from_xml(self, med_dispensed):
@@ -100,6 +101,7 @@ class MedicationRequest106(MedicationRequest):
             }],
             'text': drug_description,
         }
+        self.medication = med_cc
         return med_cc
 
     def requester_from_xml(self, med_dispensed):
@@ -115,6 +117,7 @@ class MedicationRequest106(MedicationRequest):
 
         # use contained resource, or save for other resource relationships?
         requester = {"display": " ".join((prescriber_fname, prescriber_lname))}
+        self.requester = requester
         return requester
 
     def dispense_request_from_xml(self, med_dispensed):
@@ -171,16 +174,17 @@ class MedicationRequest106(MedicationRequest):
                     'valueDate': last_fill,
                 }
             )
+        self.dispense_request = dispense_request
         return dispense_request
 
 
 class MedicationRequest20170701(MedicationRequest):
 
     def from_xml(self, med_dispensed):
-        self.medication = self.med_cc_from_xml(med_dispensed)
-        self.requester = self.requester_from_xml(med_dispensed)
-        self.dispense_request = self.dispense_request_from_xml(med_dispensed)
-        self.authored_on = self.authored_on_from_xml(med_dispensed)
+        self.med_cc_from_xml(med_dispensed)
+        self.requester_from_xml(med_dispensed)
+        self.dispense_request_from_xml(med_dispensed)
+        self.authored_on_from_xml(med_dispensed)
         return self
 
     def med_cc_from_xml(self, med_dispensed):
@@ -205,6 +209,7 @@ class MedicationRequest20170701(MedicationRequest):
             }],
             'text': drug_description,
         }
+        self.medication = med_cc
         return med_cc
 
     def requester_from_xml(self, med_dispensed):
@@ -213,6 +218,7 @@ class MedicationRequest20170701(MedicationRequest):
 
         # use contained resource, or save for other resource relationships?
         requester = {"display": " ".join((prescriber_fname, prescriber_lname))}
+        self.requester = requester
         return requester
 
     def dispense_request_from_xml(self, med_dispensed):
@@ -255,4 +261,5 @@ class MedicationRequest20170701(MedicationRequest):
                     'valueDate': last_fill,
                 }
             )
+        self.dispense_request = dispense_request
         return dispense_request
