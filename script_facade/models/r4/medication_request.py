@@ -5,12 +5,12 @@ drug_code_system_map = {
 }
 
 
-def medication_request_factory(script_version, xml_namespaces=None):
+def medication_request_factory(script_version, source_identifier, xml_namespaces=None):
     """Factory method to return versioned MedicationRequest instance"""
     if script_version == '106':
-        return MedicationRequest106(xml_namespaces)
+        return MedicationRequest106(source_identifier, xml_namespaces)
     elif script_version == '20170701':
-        return MedicationRequest20170701(xml_namespaces)
+        return MedicationRequest20170701(source_identifier, xml_namespaces)
     else:
         raise ValueError(f"unsupported script_version: f{script_version}")
 
@@ -18,7 +18,7 @@ def medication_request_factory(script_version, xml_namespaces=None):
 class MedicationRequest(object):
     """Base class for MedicationRequest version implementations"""
 
-    def __init__(self, xml_namespaces):
+    def __init__(self, source_identifier, xml_namespaces):
         # required attribute
         # https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.medication_x_
         self.medication = None
@@ -26,7 +26,7 @@ class MedicationRequest(object):
         self.authored_on = None
         self.dispense_request = None
         self.requester = None
-        self.source_identifier = None
+        self.source_identifier = source_identifier
 
         self.xml_namespaces = xml_namespaces
         self.ns_prefix = next(iter(xml_namespaces.keys())) + ":" if xml_namespaces else ""

@@ -18,8 +18,7 @@ def test_script_20170701(rxhistory_response_20170701):
     root = ET.fromstring(rxhistory_response_20170701.encode('utf-8'))
     med_dispensed_elements = root.xpath('//*[local-name()="MedicationDispensed"]')
 
-    parser = medication_request_factory("20170701")
-    parser.source_identifier = 'https://test.org/script-facade'
+    parser = medication_request_factory("20170701", source_identifier='https://test.org/script-facade')
     med = parser.from_xml(med_dispensed=med_dispensed_elements[2])
     med_fhir = med.as_fhir()
 
@@ -68,8 +67,7 @@ def test_script_106(rxhistory_response_106):
     root = ET.fromstring(rxhistory_response_106.encode('utf-8'))
     med_dispensed_elements = root.xpath('//*[local-name()="MedicationDispensed"]')
 
-    parser = medication_request_factory("106", SCRIPT_NAMESPACE)
-    parser.source_identifier = 'https://test.org/script-facade'
+    parser = medication_request_factory("106", source_identifier='https://test.org/script-facade', xml_namespaces=SCRIPT_NAMESPACE)
 
     med = parser.from_xml(med_dispensed=med_dispensed_elements[2])
     med_fhir = med.as_fhir()

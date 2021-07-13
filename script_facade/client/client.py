@@ -93,7 +93,7 @@ def parse_rx_history_response(xml_string, fhir_version, script_version):
         'r2': MedicationOrder,
         'r4': medication_request_factory,
     }
-    med_parser = med_fhir_version_map[fhir_version](script_version, client_config.RX_SRC_ID)
+    med_parser = med_fhir_version_map[fhir_version](script_version, source_identifier=client_config.RX_SRC_ID)
 
     meds = []
     for med_element in meds_elements:
