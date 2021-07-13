@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Message StructuresVersion="20170715" ECLVersion="20170715" DatatypesVersion="20170715"
+TransactionDomain="SCRIPT" TransactionVersion="20170715" TransportVersion="20170715"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Header>
+        <To Qualifier="ZZZ">WA-OHP</To>
+        <From Qualifier="D">7uycso03</From>
+        <MessageID>MESAGE1234567890</MessageID>
+        <SentTime>2019-11-14T12:00:00Z</SentTime>
+        <Security>
+            <UsernameToken>
+                <Username>9999900</Username>
+            </UsernameToken>
+            <Sender>
+                <TertiaryIdentification>tester1</TertiaryIdentification>
+            </Sender>
+            <Receiver>
+                <TertiaryIdentification>WA-OHP</TertiaryIdentification>
+            </Receiver>
+        </Security>
+        <SenderSoftware>
+            <SenderSoftwareDeveloper>N/A</SenderSoftwareDeveloper>
+            <SenderSoftwareProduct>N/A</SenderSoftwareProduct>
+            <SenderSoftwareVersionRelease>N/A</SenderSoftwareVersionRelease>
+        </SenderSoftware>
+        <TertiaryIdentifier>ABC</TertiaryIdentifier>
+    </Header>
+    <Body>
+        <RxHistoryRequest>
+            <Patient>
+                <HumanPatient>
+                    <Name>
+                        <LastName>Skywalker</LastName>
+                        <FirstName>Luke</FirstName>
+                    </Name>
+                    <Gender>M</Gender>
+                    <DateOfBirth>
+                        <Date>1977-01-12</Date>
+                    </DateOfBirth>
+                    <Address>
+                        <AddressLine1>123 Reflected Street</AddressLine1>
+                        <City>Reflected City</City>
+                        <StateProvince>
+                            <!-- Reflected -->
+                            WA
+                        </StateProvince>
+                        <PostalCode>98001</PostalCode>
+                    </Address>
+                    <CommunicationNumbers>
+                        <PrimaryTelephone>
+                            <Number>5551231234</Number>
+                        </PrimaryTelephone>
+                    </CommunicationNumbers>
+                </HumanPatient>
+            </Patient>
+            <Prescriber>
+                <NonVeterinarian>
+                    <Identification>
+                        {% if DEA %}<DEANumber>{{DEA}}</DEANumber>{% endif %}
+                        {% if NPI %}<NPI>{{NPI}}</NPI>{% endif %}
+                        {% if MutuallyDefined %}<MutuallyDefined>{{MutuallyDefined}}</MutuallyDefined>{% endif %}
+                    </Identification>
+                    {% if Specialty %}<Specialty>{{Specialty}}</Specialty>{% endif %}
+                    <PracticeLocation>
+                        <BusinessName>TEST PRESCRIBER BUSINESS</BusinessName>
+                    </PracticeLocation>
+                    <Name>
+                        <LastName>{{PrescriberLName}}</LastName>
+                        <FirstName>{{PrescriberFName}}</FirstName>
+                    </Name>
+                    {% if PrescriberAddress1 and PrescriberAddress2 and PrescriberCity and PrescriberState and PrescriberZip %}
+                    <Address>
+                        <AddressLine1>{{PrescriberAddress1}}</AddressLine1>
+                        <AddressLine2>{{PrescriberAddress2}}</AddressLine2>
+                        <City>{{PrescriberCity}}</City>
+                        <StateProvince>{{PrescriberState}}</StateProvince>
+                        <PostalCode>{{PrescriberZip}}</PostalCode>
+                    </Address>
+                    {% endif %}
+                    {% if ComNumber %}
+                    <CommunicationNumbers>
+                        <PrimaryTelephone>
+                            <Number>{{ComNumber}}</Number>
+                        </PrimaryTelephone>
+                    </CommunicationNumbers>
+                    {% endif %}
+                </NonVeterinarian>
+            </Prescriber>
+            <RequestedDates>
+                <StartDate>
+                    <Date>2012-01-01</Date>
+                </StartDate>
+                <EndDate>
+                    <Date>2019-11-14</Date>
+                </EndDate>
+            </RequestedDates>
+        </RxHistoryRequest>
+    </Body>
+</Message>
