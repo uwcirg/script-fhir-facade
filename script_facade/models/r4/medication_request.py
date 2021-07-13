@@ -57,16 +57,15 @@ class MedicationRequest(object):
         filtered_fhir_json = {k:v for k, v in fhir_json.items() if v}
         return filtered_fhir_json
 
-
-class MedicationRequest106(MedicationRequest):
-
     def from_xml(self, med_dispensed):
         self.med_cc_from_xml(med_dispensed)
         self.requester_from_xml(med_dispensed)
         self.dispense_request_from_xml(med_dispensed)
-
         self.authored_on_from_xml(med_dispensed)
         return self
+
+
+class MedicationRequest106(MedicationRequest):
 
     def med_cc_from_xml(self, med_dispensed):
         drug_description = med_dispensed.xpath(
@@ -181,13 +180,6 @@ class MedicationRequest106(MedicationRequest):
 
 
 class MedicationRequest20170701(MedicationRequest):
-
-    def from_xml(self, med_dispensed):
-        self.med_cc_from_xml(med_dispensed)
-        self.requester_from_xml(med_dispensed)
-        self.dispense_request_from_xml(med_dispensed)
-        self.authored_on_from_xml(med_dispensed)
-        return self
 
     def med_cc_from_xml(self, med_dispensed):
         drug_description = med_dispensed.xpath('.//DrugDescription/text()')[0]
