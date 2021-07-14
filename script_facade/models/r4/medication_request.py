@@ -31,7 +31,6 @@ class MedicationRequest(object):
     prescriber_fname_query = './/{self.ns_prefix}Name/{self.ns_prefix}FirstName/text()'
     prescriber_lname_query = './/{self.ns_prefix}Name/{self.ns_prefix}LastName/text()'
 
-
     def __init__(self, source_identifier, xml_namespaces=None):
         # required attribute
         # https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.medication_x_
@@ -45,7 +44,6 @@ class MedicationRequest(object):
         self.xml_namespaces = xml_namespaces
         self.ns_prefix = next(iter(xml_namespaces.keys())) + ":" if xml_namespaces else ""
 
-
     def authored_on_from_xml(self, med_dispensed):
         authored_on = med_dispensed.xpath(
             _path=self.written_data_query.format(self=self),
@@ -53,7 +51,6 @@ class MedicationRequest(object):
         )[0]
         self.authored_on = authored_on
         return authored_on
-
 
     def med_cc_from_xml(self, med_dispensed):
         drug_description = med_dispensed.xpath(
@@ -171,9 +168,6 @@ class MedicationRequest(object):
         self.dispense_request = dispense_request
         return dispense_request
 
-
-
-
     def __str__(self):
         return str(self.as_fhir())
 
@@ -199,21 +193,20 @@ class MedicationRequest(object):
 
 
 class MedicationRequest106(MedicationRequest):
+    """Derivation for version 106 MedicationRequest parsing """
 
-    # XPath query templates
+    # Define unique XPath query templates for version 106
     product_code_query = './/{self.ns_prefix}ProductCode/text()'
     product_code_qualifier_query = './/{self.ns_prefix}ProductCodeQualifier/text()'
-
     prescriber_query = './/{self.ns_prefix}Prescriber'
-
     pharmacy_name_query = './/{self.ns_prefix}Pharmacy/{self.ns_prefix}StoreName/text()'
 
-class MedicationRequest20170701(MedicationRequest):
 
-    # XPath query templates
+class MedicationRequest20170701(MedicationRequest):
+    """Derivation for version 20170701 MedicationRequest parsing """
+
+    # Define unique XPath query templates for version 20170701
     product_code_query = './/ProductCode/Code/text()'
     product_code_qualifier_query = './/ProductCode/Qualifier/text()'
-
     prescriber_query = './/Prescriber/NonVeterinarian'
-
     pharmacy_name_query = './/Pharmacy/BusinessName/text()'
