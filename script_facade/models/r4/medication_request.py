@@ -20,6 +20,10 @@ def medication_request_factory(script_version, source_identifier):
 class MedicationRequest(object):
     """Base class for MedicationRequest version implementations"""
 
+    # XPath query templates
+    written_data_query = './/{self.ns_prefix}WrittenDate/{self.ns_prefix}Date/text()'
+
+
     def __init__(self, source_identifier, xml_namespaces=None):
         # required attribute
         # https://hl7.org/fhir/R4/medicationrequest-definitions.html#MedicationRequest.medication_x_
@@ -35,7 +39,7 @@ class MedicationRequest(object):
 
     def authored_on_from_xml(self, med_dispensed):
         authored_on = med_dispensed.xpath(
-            _path=f'.//{self.ns_prefix}WrittenDate/{self.ns_prefix}Date/text()',
+            _path=self.written_data_query.format(self=self),
             namespaces=self.xml_namespaces
         )[0]
         self.authored_on = authored_on
@@ -67,24 +71,38 @@ class MedicationRequest(object):
 
 class MedicationRequest106(MedicationRequest):
 
+    # XPath query templates
+    drug_description_query = './/{self.ns_prefix}DrugDescription/text()'
+    drug_coded_query = './/{self.ns_prefix}DrugCoded'
+    product_code_query = './/{self.ns_prefix}ProductCode/text()'
+    product_code_qualifier_query = './/{self.ns_prefix}ProductCodeQualifier/text()'
+
+    prescriber_fname_query = './/{self.ns_prefix}Prescriber/{self.ns_prefix}Name/{self.ns_prefix}FirstName/text()'
+    prescriber_lname_query = './/{self.ns_prefix}Prescriber/{self.ns_prefix}Name/{self.ns_prefix}LastName/text()'
+
+    quantity_dispensed_query = './/{self.ns_prefix}Quantity/{self.ns_prefix}Value/text()'
+    expected_supply_duration_query = './/{self.ns_prefix}DaysSupply/text()'
+    pharmacy_name_query = './/{self.ns_prefix}Pharmacy/{self.ns_prefix}StoreName/text()'
+    last_fill_query = './/{self.ns_prefix}LastFillDate/{self.ns_prefix}Date/text()'
+
     def med_cc_from_xml(self, med_dispensed):
         drug_description = med_dispensed.xpath(
-            _path=f'.//{self.ns_prefix}DrugDescription/text()',
+            _path=self.drug_description_query.format(self=self),
             namespaces=self.xml_namespaces
         )[0]
 
         drug_coded = med_dispensed.xpath(
-            _path=f'.//{self.ns_prefix}DrugCoded',
+            _path=self.drug_coded_query.format(self=self),
             namespaces=self.xml_namespaces
         )[0]
 
         product_code = drug_coded.xpath(
-            _path=f'.//{self.ns_prefix}ProductCode/text()',
+            _path=self.product_code_query.format(self=self),
             namespaces=self.xml_namespaces
         )[0]
 
         product_code_qualifier = drug_coded.xpath(
-            _path=f'.//{self.ns_prefix}ProductCodeQualifier/text()',
+            _path=self.product_code_qualifier_query.format(self=self),
             namespaces=self.xml_namespaces
         )[0]
 
@@ -107,12 +125,12 @@ class MedicationRequest106(MedicationRequest):
 
     def requester_from_xml(self, med_dispensed):
         prescriber_fname = med_dispensed.xpath(
-            _path=f'.//{self.ns_prefix}Prescriber/{self.ns_prefix}Name/{self.ns_prefix}FirstName/text()',
+            _path=self.prescriber_fname_query.format(self=self),
             namespaces=self.xml_namespaces
         )[0]
 
         prescriber_lname = med_dispensed.xpath(
-            _path=f'.//{self.ns_prefix}Prescriber/{self.ns_prefix}Name/{self.ns_prefix}LastName/text()',
+            _path=self.prescriber_lname_query.format(self=self),
             namespaces=self.xml_namespaces
         )[0]
 
@@ -125,7 +143,7 @@ class MedicationRequest106(MedicationRequest):
         dispense_request = {}
 
         quantity_dispensed = med_dispensed.xpath(
-            _path=f'.//{self.ns_prefix}Quantity/{self.ns_prefix}Value/text()',
+            _path=self.quantity_dispensed_query.format(self=self),
             namespaces=self.xml_namespaces
         )[0]
         if quantity_dispensed:
@@ -135,7 +153,7 @@ class MedicationRequest106(MedicationRequest):
             )
 
         expected_supply_duration = med_dispensed.xpath(
-            _path=f'.//{self.ns_prefix}DaysSupply/text()',
+            _path=self.expected_supply_duration_query.format(self=self),
             namespaces=self.xml_namespaces
         )[0]
         if expected_supply_duration:
@@ -151,7 +169,7 @@ class MedicationRequest106(MedicationRequest):
 
         # todo: move these extensions to a separate MedicationDispense resource
         pharmacy_name = med_dispensed.xpath(
-            _path=f'.//{self.ns_prefix}Pharmacy/{self.ns_prefix}StoreName/text()',
+            _path=self.pharmacy_name_query.format(self=self),
             namespaces=self.xml_namespaces
         )[0]
         if pharmacy_name:
@@ -164,7 +182,7 @@ class MedicationRequest106(MedicationRequest):
             )
 
         last_fill = med_dispensed.xpath(
-            _path=f'.//{self.ns_prefix}LastFillDate/{self.ns_prefix}Date/text()',
+            _path=self.last_fill_query.format(self=self),
             namespaces=self.xml_namespaces
         )[0]
         if last_fill:
@@ -181,12 +199,28 @@ class MedicationRequest106(MedicationRequest):
 
 class MedicationRequest20170701(MedicationRequest):
 
-    def med_cc_from_xml(self, med_dispensed):
-        drug_description = med_dispensed.xpath('.//DrugDescription/text()')[0]
+    # XPath query templates
+    drug_description_query = './/DrugDescription/text()'
+    drug_coded_query = './/DrugCoded'
+    product_code_query = './/ProductCode/Code/text()'
+    product_code_qualifier_query = './/ProductCode/Qualifier/text()'
 
-        drug_coded = med_dispensed.xpath('.//DrugCoded')[0]
-        product_code = drug_coded.xpath('.//ProductCode/Code/text()')[0]
-        product_code_qualifier = drug_coded.xpath('.//ProductCode/Qualifier/text()')[0]
+    prescriber_fname_query = './/Prescriber/NonVeterinarian/Name/FirstName/text()'
+    prescriber_lname_query = './/Prescriber/NonVeterinarian/Name/LastName/text()'
+
+    quantity_dispensed_query = './/Quantity/Value/text()'
+    expected_supply_duration_query = './/DaysSupply/text()'
+
+    pharmacy_name_query = './/Pharmacy/BusinessName/text()'
+    last_fill_query = './/LastFillDate/Date/text()'
+
+
+    def med_cc_from_xml(self, med_dispensed):
+        drug_description = med_dispensed.xpath(self.drug_description_query.format(self=self))[0]
+
+        drug_coded = med_dispensed.xpath(self.drug_coded_query.format(self=self))[0]
+        product_code = drug_coded.xpath(self.product_code_query.format(self=self))[0]
+        product_code_qualifier = drug_coded.xpath(self.product_code_qualifier_query.format(self=self))[0]
 
         # attempt code system lookup
         product_code_qualifier = drug_code_system_map.get(product_code_qualifier, product_code_qualifier)
@@ -207,8 +241,8 @@ class MedicationRequest20170701(MedicationRequest):
         return med_cc
 
     def requester_from_xml(self, med_dispensed):
-        prescriber_fname = med_dispensed.xpath('.//Prescriber/NonVeterinarian/Name/FirstName/text()')[0]
-        prescriber_lname = med_dispensed.xpath('.//Prescriber/NonVeterinarian/Name/LastName/text()')[0]
+        prescriber_fname = med_dispensed.xpath(self.prescriber_fname_query.format(self=self))[0]
+        prescriber_lname = med_dispensed.xpath(self.prescriber_lname_query.format(self=self))[0]
 
         # use contained resource, or save for other resource relationships?
         requester = {"display": " ".join((prescriber_fname, prescriber_lname))}
@@ -217,13 +251,13 @@ class MedicationRequest20170701(MedicationRequest):
 
     def dispense_request_from_xml(self, med_dispensed):
         dispense_request = {}
-        quantity_dispensed = med_dispensed.xpath('.//Quantity/Value/text()')[0]
+        quantity_dispensed = med_dispensed.xpath(self.quantity_dispensed_query.format(self=self))[0]
         if quantity_dispensed:
             dispense_request.setdefault(
                 'quantity',
                 {'value': float(quantity_dispensed)},
             )
-        expected_supply_duration = med_dispensed.xpath('.//DaysSupply/text()')[0]
+        expected_supply_duration = med_dispensed.xpath(self.expected_supply_duration_query.format(self=self))[0]
         if expected_supply_duration:
             dispense_request.setdefault(
                 'expectedSupplyDuration',
@@ -236,7 +270,7 @@ class MedicationRequest20170701(MedicationRequest):
             )
 
         # todo: move these extensions to a separate MedicationDispense resource
-        pharmacy_name = med_dispensed.xpath('.//Pharmacy/BusinessName/text()')[0]
+        pharmacy_name = med_dispensed.xpath(self.pharmacy_name_query.format(self=self))[0]
         if pharmacy_name:
             dispense_request.setdefault('extension', [])
             dispense_request['extension'].append(
@@ -246,7 +280,7 @@ class MedicationRequest20170701(MedicationRequest):
                 }
             )
 
-        last_fill = med_dispensed.xpath('.//LastFillDate/Date/text()')[0]
+        last_fill = med_dispensed.xpath(self.last_fill_query.format(self=self))[0]
         if last_fill:
             dispense_request.setdefault('extension', [])
             dispense_request['extension'].append(
