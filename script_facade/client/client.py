@@ -108,11 +108,15 @@ def parse_rx_history_response(xml_string, fhir_version, script_version):
     }
     med_parser = med_fhir_version_map[fhir_version]
 
-    med_objs = []
+    meds_fhir = []
     for med_element in meds_elements:
-        med_objs.append(med_parser(script_version, source_identifier=client_config.RX_SRC_ID).from_xml(med_element))
+        med_obj = med_parser(
+            script_version=script_version,
+            source_identifier=client_config.RX_SRC_ID,
+        ).from_xml(med_element)
 
-    meds_fhir = [m.as_fhir() for m in med_objs]
+        meds_fhir.append(med_obj.as_fhir())
+
     return as_bundle(meds_fhir, bundle_type='searchset')
 
 
