@@ -28,6 +28,9 @@ class MedicationRequest(object):
     expected_supply_duration_query = './/{self.ns_prefix}DaysSupply/text()'
     last_fill_query = './/{self.ns_prefix}LastFillDate/{self.ns_prefix}Date/text()'
 
+    prescriber_fname_query = './/{self.ns_prefix}Name/{self.ns_prefix}FirstName/text()'
+    prescriber_lname_query = './/{self.ns_prefix}Name/{self.ns_prefix}LastName/text()'
+
 
     def __init__(self, source_identifier, xml_namespaces=None):
         # required attribute
@@ -91,12 +94,17 @@ class MedicationRequest(object):
         return med_cc
 
     def requester_from_xml(self, med_dispensed):
-        prescriber_fname = med_dispensed.xpath(
+        prescriber = med_dispensed.xpath(
+            _path=self.prescriber_query.format(self=self),
+            namespaces=self.xml_namespaces
+        )[0]
+
+        prescriber_fname = prescriber.xpath(
             _path=self.prescriber_fname_query.format(self=self),
             namespaces=self.xml_namespaces
         )[0]
 
-        prescriber_lname = med_dispensed.xpath(
+        prescriber_lname = prescriber.xpath(
             _path=self.prescriber_lname_query.format(self=self),
             namespaces=self.xml_namespaces
         )[0]
@@ -196,8 +204,7 @@ class MedicationRequest106(MedicationRequest):
     product_code_query = './/{self.ns_prefix}ProductCode/text()'
     product_code_qualifier_query = './/{self.ns_prefix}ProductCodeQualifier/text()'
 
-    prescriber_fname_query = './/{self.ns_prefix}Prescriber/{self.ns_prefix}Name/{self.ns_prefix}FirstName/text()'
-    prescriber_lname_query = './/{self.ns_prefix}Prescriber/{self.ns_prefix}Name/{self.ns_prefix}LastName/text()'
+    prescriber_query = './/{self.ns_prefix}Prescriber'
 
     pharmacy_name_query = './/{self.ns_prefix}Pharmacy/{self.ns_prefix}StoreName/text()'
 
@@ -207,7 +214,6 @@ class MedicationRequest20170701(MedicationRequest):
     product_code_query = './/ProductCode/Code/text()'
     product_code_qualifier_query = './/ProductCode/Qualifier/text()'
 
-    prescriber_fname_query = './/Prescriber/NonVeterinarian/Name/FirstName/text()'
-    prescriber_lname_query = './/Prescriber/NonVeterinarian/Name/LastName/text()'
+    prescriber_query = './/Prescriber/NonVeterinarian'
 
     pharmacy_name_query = './/Pharmacy/BusinessName/text()'
