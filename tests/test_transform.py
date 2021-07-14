@@ -1,6 +1,7 @@
 import pytest
 from lxml import etree as ET
 
+from script_facade.client.client import parse_rx_history_response
 from script_facade.models.r4.medication_request import medication_request_factory
 from conftest import load_xml
 
@@ -8,6 +9,19 @@ from conftest import load_xml
 @pytest.fixture
 def rxhistory_response_20170701(datadir):
     return load_xml(datadir, 'rxhistory-response.20170701.xml')
+
+
+def test_meds_bundle(rxhistory_response_20170701):
+    meds_bundle = parse_rx_history_response(
+        xml_string=rxhistory_response_20170701,
+        fhir_version='r4',
+        script_version='20170701',
+    )
+    assert len(meds_bundle['entry']) == 10
+
+    assert meds_bundle['entry'][0]['medicationCodeableConcept']['text'] == 'TESTOSTERONE PROPIONATE POWDER'
+    assert meds_bundle['entry'][5]['medicationCodeableConcept']['text'] == 'FORTICAL 200 UNITS NASAL SPRAY'
+    assert meds_bundle['entry'][7]['medicationCodeableConcept']['text'] == 'DIAZEPAM 10 MG TABLET'
 
 
 def test_script_20170701(rxhistory_response_20170701):
