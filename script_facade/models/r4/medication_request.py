@@ -22,6 +22,11 @@ class MedicationRequest(object):
 
     # XPath query templates
     written_data_query = './/{self.ns_prefix}WrittenDate/{self.ns_prefix}Date/text()'
+    drug_description_query = './/{self.ns_prefix}DrugDescription/text()'
+    drug_coded_query = './/{self.ns_prefix}DrugCoded'
+    quantity_dispensed_query = './/{self.ns_prefix}Quantity/{self.ns_prefix}Value/text()'
+    expected_supply_duration_query = './/{self.ns_prefix}DaysSupply/text()'
+    last_fill_query = './/{self.ns_prefix}LastFillDate/{self.ns_prefix}Date/text()'
 
 
     def __init__(self, source_identifier, xml_namespaces=None):
@@ -72,18 +77,15 @@ class MedicationRequest(object):
 class MedicationRequest106(MedicationRequest):
 
     # XPath query templates
-    drug_description_query = './/{self.ns_prefix}DrugDescription/text()'
-    drug_coded_query = './/{self.ns_prefix}DrugCoded'
+
     product_code_query = './/{self.ns_prefix}ProductCode/text()'
     product_code_qualifier_query = './/{self.ns_prefix}ProductCodeQualifier/text()'
 
     prescriber_fname_query = './/{self.ns_prefix}Prescriber/{self.ns_prefix}Name/{self.ns_prefix}FirstName/text()'
     prescriber_lname_query = './/{self.ns_prefix}Prescriber/{self.ns_prefix}Name/{self.ns_prefix}LastName/text()'
 
-    quantity_dispensed_query = './/{self.ns_prefix}Quantity/{self.ns_prefix}Value/text()'
-    expected_supply_duration_query = './/{self.ns_prefix}DaysSupply/text()'
     pharmacy_name_query = './/{self.ns_prefix}Pharmacy/{self.ns_prefix}StoreName/text()'
-    last_fill_query = './/{self.ns_prefix}LastFillDate/{self.ns_prefix}Date/text()'
+
 
     def med_cc_from_xml(self, med_dispensed):
         drug_description = med_dispensed.xpath(
@@ -200,19 +202,13 @@ class MedicationRequest106(MedicationRequest):
 class MedicationRequest20170701(MedicationRequest):
 
     # XPath query templates
-    drug_description_query = './/DrugDescription/text()'
-    drug_coded_query = './/DrugCoded'
     product_code_query = './/ProductCode/Code/text()'
     product_code_qualifier_query = './/ProductCode/Qualifier/text()'
 
     prescriber_fname_query = './/Prescriber/NonVeterinarian/Name/FirstName/text()'
     prescriber_lname_query = './/Prescriber/NonVeterinarian/Name/LastName/text()'
 
-    quantity_dispensed_query = './/Quantity/Value/text()'
-    expected_supply_duration_query = './/DaysSupply/text()'
-
     pharmacy_name_query = './/Pharmacy/BusinessName/text()'
-    last_fill_query = './/LastFillDate/Date/text()'
 
 
     def med_cc_from_xml(self, med_dispensed):
