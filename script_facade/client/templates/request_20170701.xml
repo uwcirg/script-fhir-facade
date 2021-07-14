@@ -30,12 +30,12 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <Patient>
                 <HumanPatient>
                     <Name>
-                        <LastName>Skywalker</LastName>
-                        <FirstName>Luke</FirstName>
+                        <LastName>{{PatientLName}}</LastName>
+                        <FirstName>{{PatientFName}}</FirstName>
                     </Name>
-                    <Gender>M</Gender>
+                    <Gender>{{PatientGender}}</Gender>
                     <DateOfBirth>
-                        <Date>1977-01-12</Date>
+                        <Date>{{PatientDOB}}</Date>
                     </DateOfBirth>
                     <Address>
                         <AddressLine1>123 Reflected Street</AddressLine1>
@@ -88,10 +88,10 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             </Prescriber>
             <RequestedDates>
                 <StartDate>
-                    <Date>2012-01-01</Date>
+                    <Date>{{StartDate}}</Date>
                 </StartDate>
                 <EndDate>
-                    <Date>2019-11-14</Date>
+                    <Date>{{EndDate}}</Date>
                 </EndDate>
             </RequestedDates>
         </RxHistoryRequest>
