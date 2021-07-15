@@ -56,6 +56,9 @@ def patient_search(fhir_version):
     patient_dob = request.args.get('subject:Patient.birthdate', '').split('eq')[-1]
 
     if not all((patient_fname, patient_lname, patient_dob)):
+        current_app.logger.warning(
+            "patient search attempted without all required parameters"
+            "{fname: %s, lname: %s, dob: %s", patient_fname, patient_lname, patient_dob)
         return 'Required parameters not given', 400
 
     script_version = request.args.get('script_version')
