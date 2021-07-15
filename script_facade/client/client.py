@@ -6,6 +6,7 @@ from lxml import etree as ET
 import requests_cache
 import requests
 from requests import Request, Session
+from werkzeug.exceptions import InternalServerError
 
 from script_facade.models.r1.bundle import as_bundle
 from script_facade.models.r1.medication_order import MedicationOrder
@@ -138,9 +139,20 @@ def parse_patient_lookup_query(xml_string, script_version):
 
     patients = []
     for patient_element in patient_elements:
-        patients.append(Patient.from_xml(patient_element, ns=SCRIPT_NAMESPACE))
+        patient = Patient.from_xml(patient_element, ns=SCRIPT_NAMESPACE)
+        patients.append(patient.as_fhir())
 
-    patients = [p.as_fhir() for p in patients]
+    if len(patients) == 0:
+        # Confirm expected no match code is present.  Otherwise
+        # log and raise to avoid masking errors
+        codes = root.findall('Body/Error/Code')
+        if len(codes) == 1 and codes[0].text == '900':
+            nomatch = True
+        else:
+            current_app.logger.error(
+                "no patients; didn't find expected PDMP no-match error code within: %s",
+                xml_string)
+            raise InternalServerError("Unexpected PDMP response")
     return as_bundle(patients, bundle_type='searchset')
 
 
