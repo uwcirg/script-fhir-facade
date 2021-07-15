@@ -1,6 +1,7 @@
 """Client for NCPDP SCRIPT Standard version 10.6"""
 from datetime import datetime
 
+from flask import abort, current_app
 from lxml import etree as ET
 import requests_cache
 import requests
@@ -122,8 +123,11 @@ def parse_rx_history_response(xml_string, fhir_version, script_version):
 
 def parse_patient_lookup_query(xml_string, script_version):
     # LXML infers encoding from XML metadata
-    parser = ET.XMLParser(dtd_validation=True)
-    root = parser.fromstring(xml_string.encode('utf-8'))
+    try:
+        root = ET.fromstring(xml_string.encode('utf-8'))
+    except ET.XMLSyntaxError as se:
+        current_app.logger.error("Couldn't parse PDMP XML: %s", se)
+        abort(500, "Invalid XML returned from PDMP")
 
     patient_script_version_map = {
         '106': '//script:Patient',
@@ -154,6 +158,7 @@ def rx_history_query(patient_fname, patient_lname, patient_dob, fhir_version, sc
 
         if response.status_code == 200:
             xml_body = response.text
+            current_app.logger.debug("found mocked PDMP response for (%s, %s)", patient_lname, patient_fname)
 
     if not xml_body:
         api_endpoint = client_config.SCRIPT_ENDPOINT_URL
