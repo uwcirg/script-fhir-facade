@@ -122,7 +122,8 @@ def parse_rx_history_response(xml_string, fhir_version, script_version):
 
 def parse_patient_lookup_query(xml_string, script_version):
     # LXML infers encoding from XML metadata
-    root = ET.fromstring(xml_string.encode('utf-8'))
+    parser = ET.XMLParser(dtd_validation=True)
+    root = parser.fromstring(xml_string.encode('utf-8'))
 
     patient_script_version_map = {
         '106': '//script:Patient',
