@@ -1,0 +1,22 @@
+ <Message xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" StructuresVersion="20170715" ECLVersion="20170715" DatatypesVersion="20170715" TransactionDomain="SCRIPT" TransactionVersion="20170715" TransportVersion="20170715">
+     <Header>
+         <To Qualifier="D">7uycso03</To>
+         <From Qualifier="ZZZ">WA-OHP</From>
+         <MessageID>MESAGE1234567890</MessageID>
+         <RelatesToMessageID>MESAGE1234567890</RelatesToMessageID>
+         <SentTime>2021-07-15T19:21:01+00:00</SentTime>
+         <SenderSoftware>
+             <SenderSoftwareDeveloper>N/A</SenderSoftwareDeveloper>
+             <SenderSoftwareProduct>N/A</SenderSoftwareProduct>
+             <SenderSoftwareVersionRelease>N/A</SenderSoftwareVersionRelease>
+         </SenderSoftware>
+         <TertiaryIdentifier>ABC</TertiaryIdentifier>
+     </Header>
+     <Body>
+         <Error>
+             <Code>900</Code>
+             <DescriptionCode>1000</DescriptionCode>
+             <Description>NotFound</Description>
+         </Error>
+     </Body>
+ </Message>
