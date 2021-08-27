@@ -1,4 +1,4 @@
-from flask import Blueprint, request, current_app
+from flask import Blueprint, jsonify, request, current_app
 import timeit
 
 from script_facade.client.client import rx_history_query, patient_lookup_query
@@ -20,22 +20,29 @@ def required_search_request_params(req, context):
     patient_fname = req.args.get('subject:Patient.name.given')
     patient_lname = req.args.get('subject:Patient.name.family')
     patient_dob = req.args.get('subject:Patient.birthdate', '').split('eq')[-1]
-    dea = req.args.get('dea')
+    DEA = req.args.get('DEA')
 
-    if not all((patient_fname, patient_lname, patient_dob, dea)):
+    if not all((patient_fname, patient_lname, patient_dob, DEA)):
         current_app.logger.warning(
             "%s search attempted without all required parameters"
-            "{fname: %s, lname: %s, dob: %s, dea: %s",
-            context, patient_fname, patient_lname, patient_dob, dea)
-        return 'Required parameters not given', 400
+            "{fname: %s, lname: %s, dob: %s, DEA: %s}",
+            context, patient_fname, patient_lname, patient_dob, DEA)
+        return jsonify(message='Required parameters not given'), 400
 
     return {
         'patient_fname': patient_fname,
         'patient_lname': patient_lname,
         'patient_dob': patient_dob,
-        'dea': dea,
+        'DEA': DEA,
         'script_version': req.args.get('script_version')
     }
+
+
+def audit_entry(context, tags, **kwargs):
+    message = (
+        f"{context} lookup: ({kwargs['patient_fname']} {kwargs['patient_lname']}"
+        f" -- {kwargs['patient_dob']})")
+    current_app.logger.info(message, extra={'tags': tags, 'user': kwargs['DEA']})
 
 
 # todo: version-based routing
@@ -47,6 +54,7 @@ def medication_order(fhir_version):
     kwargs = required_search_request_params(request, 'MedicationOrder')
     kwargs['fhir_version'] = fhir_version
 
+    audit_entry(context='MedicationOrder', tags=['PDMP', 'search'], **kwargs)
     rx_history_start_time = timeit.default_timer()
     med_order_bundle = rx_history_query(**kwargs)
     current_app.logger.debug(
@@ -73,5 +81,6 @@ def patient_search(fhir_version):
     kwargs = required_search_request_params(request, 'Patient')
     kwargs['fhir_version'] = fhir_version
 
+    audit_entry(context='Patient', tags=['PDMP', 'search'], **kwargs)
     patient_bundle = patient_lookup_query(**kwargs)
     return patient_bundle
