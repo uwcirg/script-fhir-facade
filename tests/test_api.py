@@ -17,6 +17,7 @@ def test_medication_order(client, mocker, med_order_bundle):
           "subject:Patient.name.given": "Padme",
           "subject:Patient.name.family": "Amidfla",
           "subject:Patient.birthdate": "eq1945-01-15",
+          "dea": "abc123"
         }
       )
     assert response.status_code == 200

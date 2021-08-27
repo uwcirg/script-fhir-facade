@@ -36,8 +36,9 @@ def subtract_years(dt, years):
 
 
 class RxRequest(object):
-    def __init__(self, url, script_version):
+    def __init__(self, url, dea, script_version):
         self.url = url
+        self.dea = dea
         self.script_version = script_version
 
     def build_request(self, patient_fname, patient_lname, patient_dob):
@@ -58,7 +59,7 @@ class RxRequest(object):
 
         template_vars = {
             'FromQualifier': client_config.SCRIPT_CLIENT_QUALIFIER,
-            #'DEA': client_config.SCRIPT_CLIENT_DEA_NUMBER,
+            'DEA': self.dea,
             'NPI': client_config.SCRIPT_CLIENT_PROVIDER_ID,
             #'MutuallyDefined': client_config.SCRIPT_CLIENT_MUTUALLY_DEFINED,
             #'Specialty': '207R00000X',
@@ -160,7 +161,7 @@ def parse_patient_lookup_query(xml_string, script_version):
     return as_bundle(patients, bundle_type='searchset')
 
 
-def rx_history_query(patient_fname, patient_lname, patient_dob, fhir_version, script_version):
+def rx_history_query(patient_fname, patient_lname, patient_dob, dea, fhir_version, script_version):
     # use default configured NCPDP SCRIPT version if none given
     script_version = script_version or client_config.SCRIPT_VERSION
 
@@ -178,7 +179,7 @@ def rx_history_query(patient_fname, patient_lname, patient_dob, fhir_version, sc
 
     if not xml_body:
         api_endpoint = client_config.SCRIPT_ENDPOINT_URL
-        request_builder = RxRequest(url=api_endpoint, script_version=script_version)
+        request_builder = RxRequest(url=api_endpoint, dea=dea, script_version=script_version)
         request = request_builder.build_request(patient_fname, patient_lname, patient_dob)
         s = Session()
         response = s.send(request, **session_data)
@@ -190,7 +191,7 @@ def rx_history_query(patient_fname, patient_lname, patient_dob, fhir_version, sc
     return meds
 
 
-def patient_lookup_query(first_name, last_name, date_of_birth, script_version):
+def patient_lookup_query(first_name, last_name, date_of_birth, dea, script_version):
     # use default configured NCPDP SCRIPT version if none given
     script_version = script_version or client_config.SCRIPT_VERSION
 
@@ -207,7 +208,7 @@ def patient_lookup_query(first_name, last_name, date_of_birth, script_version):
 
     if not xml_body:
         api_endpoint = client_config.SCRIPT_ENDPOINT_URL
-        request_builder = RxRequest(url=api_endpoint, script_version=script_version)
+        request_builder = RxRequest(url=api_endpoint, dea=dea, script_version=script_version)
         request = request_builder.build_request(first_name, last_name, date_of_birth)
         s = Session()
         response = s.send(request, **session_data)
