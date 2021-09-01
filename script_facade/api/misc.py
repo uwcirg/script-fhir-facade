@@ -1,5 +1,7 @@
-from flask import Blueprint, abort, current_app, jsonify
+from flask import Blueprint, current_app, jsonify
 from flask.json import JSONEncoder
+
+from script_facade.jsonify_abort import jsonify_abort
 
 blueprint = Blueprint('misc', __name__)
 
@@ -22,7 +24,7 @@ def config_settings(config_key):
         key = config_key.upper()
         for pattern in blacklist:
             if pattern in key:
-                abort(400, f"Configuration key {key} not available")
+                jsonify_abort(status_code=400, message=f"Configuration key {key} not available")
         return jsonify({key: current_app.config.get(key)})
 
     results = {}
