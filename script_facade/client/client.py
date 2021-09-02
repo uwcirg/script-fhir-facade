@@ -1,13 +1,14 @@
 """Client for NCPDP SCRIPT Standard version 10.6"""
 from datetime import datetime
 
-from flask import abort, current_app
+from flask import current_app
 from lxml import etree as ET
 import requests_cache
 import requests
 from requests import Request, Session
 from werkzeug.exceptions import InternalServerError
 
+from script_facade.jsonify_abort import jsonify_abort
 from script_facade.models.r1.bundle import as_bundle
 from script_facade.models.r1.medication_order import MedicationOrder
 from script_facade.models.r4.medication_request import medication_request_factory, SCRIPT_NAMESPACE
@@ -128,7 +129,7 @@ def parse_patient_lookup_query(xml_string, script_version):
         root = ET.fromstring(xml_string.encode('utf-8'))
     except ET.XMLSyntaxError as se:
         current_app.logger.error("Couldn't parse PDMP XML: %s", se)
-        abort(500, "Invalid XML returned from PDMP")
+        return jsonify_abort(message="Invalid XML returned from PDMP", status_code=500)
 
     patient_script_version_map = {
         '106': '//script:Patient',
