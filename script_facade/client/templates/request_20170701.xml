@@ -20,7 +20,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
         </Security>
         <SenderSoftware>
             <SenderSoftwareDeveloper>UW CIRG</SenderSoftwareDeveloper>
-            <SenderSoftwareProduct>SCRIPT FHIR Facade/SenderSoftwareProduct>
+            <SenderSoftwareProduct>SCRIPT FHIR Facade</SenderSoftwareProduct>
             <SenderSoftwareVersionRelease>N/A</SenderSoftwareVersionRelease>
         </SenderSoftware>
         <TertiaryIdentifier>ABC</TertiaryIdentifier>
