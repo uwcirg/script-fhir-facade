@@ -19,8 +19,8 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             </Receiver>
         </Security>
         <SenderSoftware>
-            <SenderSoftwareDeveloper>N/A</SenderSoftwareDeveloper>
-            <SenderSoftwareProduct>N/A</SenderSoftwareProduct>
+            <SenderSoftwareDeveloper>UW CIRG</SenderSoftwareDeveloper>
+            <SenderSoftwareProduct>SCRIPT FHIR Facade/SenderSoftwareProduct>
             <SenderSoftwareVersionRelease>N/A</SenderSoftwareVersionRelease>
         </SenderSoftware>
         <TertiaryIdentifier>ABC</TertiaryIdentifier>
