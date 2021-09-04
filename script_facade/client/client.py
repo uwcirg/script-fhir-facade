@@ -73,6 +73,9 @@ class RxRequest(object):
             #'PrescriberZip': '99999',
             #'PrescriberPlaceLoc': 'AD2',
 
+            'FromQualifier': client_config.SCRIPT_FROM_QUALIFIER,
+            'SenderTertiaryIdentification': client_config.SCRIPT_TERTIARY_IDENTIFICATION,
+
             #'ComNumber': '1234567890',
             #'ComQualifier': 'TE',
 

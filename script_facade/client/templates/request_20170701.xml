@@ -4,7 +4,7 @@ TransactionDomain="SCRIPT" TransactionVersion="20170715" TransportVersion="20170
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <Header>
         <To Qualifier="ZZZ">WA-OHP</To>
-        <From Qualifier="D">7uycso03</From>
+        <From Qualifier="D">{{FromQualifier}}</From>
         <MessageID>MESAGE1234567890</MessageID>
         <SentTime>2019-11-14T12:00:00Z</SentTime>
         <Security>
@@ -12,16 +12,16 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                 <Username>9999900</Username>
             </UsernameToken>
             <Sender>
-                <TertiaryIdentification>tester1</TertiaryIdentification>
+                <TertiaryIdentification>{{SenderTertiaryIdentification}}</TertiaryIdentification>
             </Sender>
             <Receiver>
                 <TertiaryIdentification>WA-OHP</TertiaryIdentification>
             </Receiver>
         </Security>
         <SenderSoftware>
-            <SenderSoftwareDeveloper>N/A</SenderSoftwareDeveloper>
-            <SenderSoftwareProduct>N/A</SenderSoftwareProduct>
-            <SenderSoftwareVersionRelease>N/A</SenderSoftwareVersionRelease>
+            <SenderSoftwareDeveloper>UW CIRG</SenderSoftwareDeveloper>
+            <SenderSoftwareProduct>SCRIPT FHIR Facade</SenderSoftwareProduct>
+            <SenderSoftwareVersionRelease>N/A<!-- TODO pass VERSION_STRING --></SenderSoftwareVersionRelease>
         </SenderSoftware>
         <TertiaryIdentifier>ABC</TertiaryIdentifier>
     </Header>

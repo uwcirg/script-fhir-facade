@@ -24,6 +24,9 @@ class DefaultConfig(object):
     SCRIPT_CLIENT_MUTUALLY_DEFINED = os.environ.get('SCRIPT_CLIENT_MUTUALLY_DEFINED')
     SCRIPT_CLIENT_QUALIFIER = os.environ.get('SCRIPT_CLIENT_QUALIFIER')
 
+    # site-specific identifiers
+    SCRIPT_FROM_QUALIFIER = os.environ.get('SCRIPT_FROM_QUALIFIER', '7uycso03')
+    SCRIPT_TERTIARY_IDENTIFICATION = os.environ.get('SCRIPT_TERTIARY_IDENTIFICATION', 'tester1')
     @classmethod
     def root_path(cls):
         return os.path.dirname(os.path.realpath(__file__))
