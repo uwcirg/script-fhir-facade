@@ -2,13 +2,14 @@ from flask import Blueprint, jsonify, request, current_app
 import timeit
 
 from script_facade.client.client import rx_history_query, patient_lookup_query
+from script_facade.jsonify_abort import jsonify_abort
 from script_facade.rxnav.transcode import add_rxnorm_coding
 
 
 blueprint = Blueprint('fhir', __name__)
 
 
-def required_search_request_params(req, context):
+def required_search_request_params(req, fhir_version, context):
     """Extract common request parameters for search APIs
 
     :param req: the live request
@@ -27,13 +28,14 @@ def required_search_request_params(req, context):
             "%s search attempted without all required parameters"
             "{fname: %s, lname: %s, dob: %s, DEA: %s}",
             context, patient_fname, patient_lname, patient_dob, DEA)
-        return jsonify(message='Required parameters not given'), 400
+        jsonify_abort(message='Required parameters not given', status_code=400)
 
     return {
         'patient_fname': patient_fname,
         'patient_lname': patient_lname,
         'patient_dob': patient_dob,
         'DEA': DEA,
+        'fhir_version': fhir_version,
         'script_version': req.args.get('script_version')
     }
 
@@ -51,8 +53,7 @@ def audit_entry(context, tags, **kwargs):
 # ?patient=PATIENT_ID
 @blueprint.route('/v/<fhir_version>/fhir/MedicationOrder')
 def medication_order(fhir_version):
-    kwargs = required_search_request_params(request, 'MedicationOrder')
-    kwargs['fhir_version'] = fhir_version
+    kwargs = required_search_request_params(request, fhir_version, 'MedicationOrder')
 
     audit_entry(context='MedicationOrder', tags=['PDMP', 'search'], **kwargs)
     rx_history_start_time = timeit.default_timer()
@@ -78,8 +79,7 @@ def medication_order(fhir_version):
 # ?patient=PATIENT_ID
 @blueprint.route('/v/<fhir_version>/fhir/Patient')
 def patient_search(fhir_version):
-    kwargs = required_search_request_params(request, 'Patient')
-    kwargs['fhir_version'] = fhir_version
+    kwargs = required_search_request_params(request, fhir_version, 'Patient')
 
     audit_entry(context='Patient', tags=['PDMP', 'search'], **kwargs)
     patient_bundle = patient_lookup_query(**kwargs)
