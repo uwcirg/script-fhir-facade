@@ -191,7 +191,7 @@ def rx_history_query(patient_fname, patient_lname, patient_dob, DEA, fhir_versio
     return meds
 
 
-def patient_lookup_query(first_name, last_name, date_of_birth, DEA, script_version):
+def patient_lookup_query(patient_fname, patient_lname, patient_dob, DEA, script_version, fhir_version):
     # use default configured NCPDP SCRIPT version if none given
     script_version = script_version or client_config.SCRIPT_VERSION
 
@@ -199,7 +199,7 @@ def patient_lookup_query(first_name, last_name, date_of_birth, DEA, script_versi
     mock_url = client_config.SCRIPT_MOCK_URL
     if mock_url:
         mock_base_url = mock_url.replace("github.com", "raw.githubusercontent.com")
-        full_url = f"{mock_base_url}/main/{script_version}/{first_name.lower()}-{last_name.lower()}-{date_of_birth}.xml"
+        full_url = f"{mock_base_url}/main/{script_version}/{patient_fname.lower()}-{patient_lname.lower()}-{patient_dob}.xml"
         with requests_cache.disabled():
             response = requests.get(full_url)
 
@@ -209,7 +209,7 @@ def patient_lookup_query(first_name, last_name, date_of_birth, DEA, script_versi
     if not xml_body:
         api_endpoint = client_config.SCRIPT_ENDPOINT_URL
         request_builder = RxRequest(url=api_endpoint, DEA=DEA, script_version=script_version)
-        request = request_builder.build_request(first_name, last_name, date_of_birth)
+        request = request_builder.build_request(patient_fname, patient_lname, patient_dob)
         s = Session()
         response = s.send(request, **session_data)
         response.raise_for_status()
