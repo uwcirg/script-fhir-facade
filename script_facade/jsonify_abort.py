@@ -3,9 +3,9 @@ from flask import jsonify, make_response
 
 
 def jsonify_abort(status_code, **kwargs):
-    """Given kwards included in JSON response using given status_code
+    """Given kwargs included in JSON response using given status_code
 
-    NB - must return from view
+    NB - must return from view - does not raise from nested call
     """
     response = make_response(jsonify(kwargs))
     response.status_code = status_code
