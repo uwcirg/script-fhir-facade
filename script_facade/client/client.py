@@ -6,9 +6,7 @@ from lxml import etree as ET
 import requests_cache
 import requests
 from requests import Request, Session
-from werkzeug.exceptions import InternalServerError
 
-from script_facade.jsonify_abort import jsonify_abort
 from script_facade.models.r1.bundle import as_bundle
 from script_facade.models.r1.medication_order import MedicationOrder
 from script_facade.models.r4.medication_request import medication_request_factory, SCRIPT_NAMESPACE
@@ -133,7 +131,7 @@ def parse_patient_lookup_query(xml_string, script_version):
         root = ET.fromstring(xml_string.encode('utf-8'))
     except ET.XMLSyntaxError as se:
         current_app.logger.error("Couldn't parse PDMP XML: %s", se)
-        return jsonify_abort(message="Invalid XML returned from PDMP", status_code=500)
+        raise RuntimeError("Invalid XML returned from PDMP")
 
     patient_script_version_map = {
         '106': '//script:Patient',
@@ -157,7 +155,7 @@ def parse_patient_lookup_query(xml_string, script_version):
             current_app.logger.error(
                 "no patients; didn't find expected PDMP no-match error code within: %s",
                 xml_string)
-            raise InternalServerError("Unexpected PDMP response")
+            raise RuntimeError("Unexpected PDMP response")
     return as_bundle(patients, bundle_type='searchset')
 
 
@@ -211,7 +209,11 @@ def patient_lookup_query(patient_fname, patient_lname, patient_dob, DEA, script_
         request_builder = RxRequest(url=api_endpoint, DEA=DEA, script_version=script_version)
         request = request_builder.build_request(patient_fname, patient_lname, patient_dob)
         s = Session()
-        response = s.send(request, **session_data)
+        try:
+            response = s.send(request, **session_data)
+        except OSError as e:
+            current_app.logger.error("Missing PDMP certificates: %s", e)
+            raise RuntimeError("Valid PDMP certificates not found")
         response.raise_for_status()
 
         xml_body = response.text

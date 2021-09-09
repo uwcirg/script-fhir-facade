@@ -24,7 +24,7 @@ def config_settings(config_key):
         key = config_key.upper()
         for pattern in blacklist:
             if pattern in key:
-                jsonify_abort(status_code=400, message=f"Configuration key {key} not available")
+                return jsonify_abort(status_code=400, message=f"Configuration key {key} not available")
         return jsonify({key: current_app.config.get(key)})
 
     results = {}

@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, current_app
+from flask import Blueprint, request, current_app
 import timeit
 
 from script_facade.client.client import rx_history_query, patient_lookup_query
@@ -15,7 +15,7 @@ def required_search_request_params(req, fhir_version, context):
     :param req: the live request
     :param context: calling context used in exception text
     :returns: dictionary of required and optional search parameters
-    :raises: BadRequest if any required parameters are missing
+    :raises: ValueError if any required parameters are missing
 
     """
     patient_fname = req.args.get('subject:Patient.name.given')
@@ -28,7 +28,7 @@ def required_search_request_params(req, fhir_version, context):
             "%s search attempted without all required parameters"
             "{fname: %s, lname: %s, dob: %s, DEA: %s}",
             context, patient_fname, patient_lname, patient_dob, DEA)
-        jsonify_abort(message='Required parameters not given', status_code=400)
+        raise ValueError('Required parameters not given')
 
     return {
         'patient_fname': patient_fname,
@@ -53,7 +53,10 @@ def audit_entry(context, tags, **kwargs):
 # ?patient=PATIENT_ID
 @blueprint.route('/v/<fhir_version>/fhir/MedicationOrder')
 def medication_order(fhir_version):
-    kwargs = required_search_request_params(request, fhir_version, 'MedicationOrder')
+    try:
+        kwargs = required_search_request_params(request, fhir_version, 'MedicationOrder')
+    except ValueError as error:
+        jsonify_abort(message=str(error), status_code=400)
 
     audit_entry(context='MedicationOrder', tags=['PDMP', 'search'], **kwargs)
     rx_history_start_time = timeit.default_timer()
@@ -79,8 +82,14 @@ def medication_order(fhir_version):
 # ?patient=PATIENT_ID
 @blueprint.route('/v/<fhir_version>/fhir/Patient')
 def patient_search(fhir_version):
-    kwargs = required_search_request_params(request, fhir_version, 'Patient')
+    try:
+        kwargs = required_search_request_params(request, fhir_version, 'Patient')
+    except ValueError as error:
+        jsonify_abort(message=str(error), status_code=400)
 
     audit_entry(context='Patient', tags=['PDMP', 'search'], **kwargs)
-    patient_bundle = patient_lookup_query(**kwargs)
+    try:
+        patient_bundle = patient_lookup_query(**kwargs)
+    except RuntimeError as error:
+        return jsonify_abort(status_code=400, message=str(error))
     return patient_bundle
