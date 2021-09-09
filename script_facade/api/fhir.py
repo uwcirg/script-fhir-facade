@@ -28,7 +28,7 @@ def required_search_request_params(req, fhir_version, context):
             "%s search attempted without all required parameters"
             "{fname: %s, lname: %s, dob: %s, DEA: %s}",
             context, patient_fname, patient_lname, patient_dob, DEA)
-        jsonify_abort(message='Required parameters not given', status_code=400)
+        return jsonify_abort(message='Required parameters not given', status_code=400)
 
     return {
         'patient_fname': patient_fname,

@@ -133,7 +133,7 @@ def parse_patient_lookup_query(xml_string, script_version):
         root = ET.fromstring(xml_string.encode('utf-8'))
     except ET.XMLSyntaxError as se:
         current_app.logger.error("Couldn't parse PDMP XML: %s", se)
-        jsonify_abort(message="Invalid XML returned from PDMP", status_code=500)
+        return jsonify_abort(message="Invalid XML returned from PDMP", status_code=500)
 
     patient_script_version_map = {
         '106': '//script:Patient',
@@ -157,7 +157,7 @@ def parse_patient_lookup_query(xml_string, script_version):
             current_app.logger.error(
                 "no patients; didn't find expected PDMP no-match error code within: %s",
                 xml_string)
-            jsonify_abort(message="Unexpected PDMP response", status_code=400)
+            return jsonify_abort(message="Unexpected PDMP response", status_code=400)
     return as_bundle(patients, bundle_type='searchset')
 
 
@@ -215,7 +215,7 @@ def patient_lookup_query(patient_fname, patient_lname, patient_dob, DEA, script_
             response = s.send(request, **session_data)
         except OSError as e:
             current_app.logger.error("Missing PDMP certificates: %s", e)
-            jsonify_abort(message="Valid PDMP certificates not found", status_code=400)
+            return jsonify_abort(message="Valid PDMP certificates not found", status_code=400)
         response.raise_for_status()
 
         xml_body = response.text
