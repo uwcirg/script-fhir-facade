@@ -1,6 +1,6 @@
 import os
 import pytest
-from werkzeug.exceptions import InternalServerError
+from werkzeug.exceptions import BadRequest
 
 from script_facade.client.client import parse_patient_lookup_query
 
@@ -23,7 +23,7 @@ def test_no_results_wo_expected(client, no_results_response):
     # published error on no match and expect a raise
     bogus_results_response = no_results_response.replace(
         '<Code>900</Code>', '<Code>666</Code>')
-    with pytest.raises(InternalServerError):
+    with pytest.raises(BadRequest):
         parse_patient_lookup_query(
             xml_string=bogus_results_response,
             script_version='20170701')
