@@ -56,7 +56,7 @@ def medication_order(fhir_version):
     try:
         kwargs = required_search_request_params(request, fhir_version, 'MedicationOrder')
     except ValueError as error:
-        jsonify_abort(message=str(error), status_code=400)
+        return jsonify_abort(message=str(error), status_code=400)
 
     audit_entry(context='MedicationOrder', tags=['PDMP', 'search'], **kwargs)
     rx_history_start_time = timeit.default_timer()
@@ -85,7 +85,7 @@ def patient_search(fhir_version):
     try:
         kwargs = required_search_request_params(request, fhir_version, 'Patient')
     except ValueError as error:
-        jsonify_abort(message=str(error), status_code=400)
+        return jsonify_abort(message=str(error), status_code=400)
 
     audit_entry(context='Patient', tags=['PDMP', 'search'], **kwargs)
     try:
