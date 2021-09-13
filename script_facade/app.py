@@ -13,8 +13,8 @@ def create_app(testing=False, cli=False):
     app.config.from_object('script_facade.client.config')
     register_blueprints(app)
     configure_app(app)
-    configure_cache(app)
     configure_logging(app)
+    configure_cache(app)
 
     return app
 
