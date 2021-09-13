@@ -24,7 +24,7 @@ def required_search_request_params(req, fhir_version, context):
     DEA = req.args.get('DEA')
 
     if not all((patient_fname, patient_lname, patient_dob, DEA)):
-        current_app.logger.warning(
+        current_app.logger.debug(
             "%s search attempted without all required parameters"
             "{fname: %s, lname: %s, dob: %s, DEA: %s}",
             context, patient_fname, patient_lname, patient_dob, DEA)

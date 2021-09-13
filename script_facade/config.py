@@ -10,6 +10,7 @@ REQUEST_CACHE_EXPIRE = 24 * 60 * 60  # 24 hours
 SERVER_NAME = os.getenv("SERVER_NAME")
 SECRET_KEY = os.getenv("SECRET_KEY")
 
+LOG_LEVEL = os.environ.get('LOG_LEVEL', 'DEBUG').upper()
 
 RXNAV_URL = os.getenv("RXNAV_URL", "https://rxnav.nlm.nih.gov")
 RXNAV_LOOKUP_ENABLED = os.environ.get('RXNAV_LOOKUP_ENABLED', 'false').lower() == 'true'

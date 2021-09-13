@@ -1,4 +1,5 @@
 from flask import Flask
+import logging
 import redis
 import requests_cache
 
@@ -12,6 +13,7 @@ def create_app(testing=False, cli=False):
     app.config.from_object('script_facade.client.config')
     register_blueprints(app)
     configure_app(app)
+    configure_logging(app)
     configure_cache(app)
 
     return app
@@ -55,3 +57,7 @@ def configure_cache(app):
         old_data_on_error=True,
         connection=redis.StrictRedis.from_url(app.config.get("REQUEST_CACHE_URL")),
     )
+
+
+def configure_logging(app):
+    app.logger.setLevel(getattr(logging, app.config['LOG_LEVEL'].upper()))
