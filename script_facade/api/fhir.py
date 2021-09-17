@@ -41,6 +41,9 @@ def required_search_request_params(req, fhir_version, context):
 
 
 def audit_entry(context, tags, **kwargs):
+    # TODO bring back and wire into LogServer, if audit from facade is needed
+    return
+
     message = (
         f"{context} lookup: ({kwargs['patient_fname']} {kwargs['patient_lname']}"
         f" -- {kwargs['patient_dob']})")
