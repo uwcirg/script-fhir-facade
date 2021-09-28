@@ -15,4 +15,4 @@ ENV FLASK_APP=script_facade/app:create_app() \
 
 EXPOSE "${PORT}"
 
-CMD flask run --host 0.0.0.0 --port "${PORT}"
+CMD gunicorn --bind "0.0.0.0:${PORT:-8000}" ${FLASK_APP}
