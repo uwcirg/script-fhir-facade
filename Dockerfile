@@ -9,7 +9,7 @@ RUN pip install --requirement requirements.txt
 COPY . .
 
 
-ENV FLASK_APP=script_facade/app:create_app() \
+ENV FLASK_APP=script_facade.app:create_app() \
     FLASK_ENV=development \
     PORT=8008
 
