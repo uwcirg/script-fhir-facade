@@ -15,4 +15,4 @@ ENV FLASK_APP=script_facade.app:create_app() \
 
 EXPOSE "${PORT}"
 
-CMD gunicorn --bind "0.0.0.0:${PORT:-8000}" ${FLASK_APP}
+CMD gunicorn --bind "0.0.0.0:${PORT:-8008}" ${FLASK_APP}
