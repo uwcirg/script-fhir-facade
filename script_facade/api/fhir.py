@@ -1,4 +1,5 @@
 from flask import Blueprint, request, current_app
+from requests import HTTPError
 import timeit
 
 from script_facade.client.client import rx_history_query, patient_lookup_query
@@ -93,6 +94,6 @@ def patient_search(fhir_version):
     audit_entry(context='Patient', tags=['PDMP', 'search'], **kwargs)
     try:
         patient_bundle = patient_lookup_query(**kwargs)
-    except RuntimeError as error:
+    except (HTTPError, RuntimeError) as error:
         return jsonify_abort(status_code=400, message=str(error))
     return patient_bundle
