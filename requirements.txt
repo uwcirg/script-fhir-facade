@@ -6,7 +6,7 @@ gunicorn==20.1.0 # via script_facade (setup.py)
 idna==2.10 # via requests
 itsdangerous==2.0.1 # via flask
 jinja2==3.0.1 # via flask
-lxml==4.6.3 # via script-facade (setup.py)
+lxml==4.6.5 # via script-facade (setup.py)
 markupsafe==2.0.1 # via jinja2
 redis==3.5.3 # via script-facade (setup.py)
 requests-cache==0.6.4 # via script-facade (setup.py)
