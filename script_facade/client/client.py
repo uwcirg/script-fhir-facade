@@ -6,6 +6,7 @@ from lxml import etree as ET
 import requests_cache
 import requests
 from requests import Request, Session
+from werkzeug.exceptions import NotFound
 
 from script_facade.models.r1.bundle import as_bundle
 from script_facade.models.r1.medication_order import MedicationOrder
@@ -175,7 +176,7 @@ def rx_history_query(patient_fname, patient_lname, patient_dob, DEA, fhir_versio
             xml_body = response.text
             current_app.logger.debug("found mocked PDMP response for (%s, %s)", patient_lname, patient_fname)
 
-    if not xml_body:
+    if not xml_body and client_config.SCRIPT_ENDPOINT_URL:
         api_endpoint = client_config.SCRIPT_ENDPOINT_URL
         request_builder = RxRequest(url=api_endpoint, DEA=DEA, script_version=script_version)
         request = request_builder.build_request(patient_fname, patient_lname, patient_dob)
@@ -185,6 +186,8 @@ def rx_history_query(patient_fname, patient_lname, patient_dob, DEA, fhir_versio
 
         xml_body = response.text
 
+    if not xml_body:
+        raise NotFound()
     meds = parse_rx_history_response(xml_body, fhir_version, script_version)
     return meds
 
@@ -204,7 +207,7 @@ def patient_lookup_query(patient_fname, patient_lname, patient_dob, DEA, script_
         if response.status_code == 200:
             xml_body = response.text
 
-    if not xml_body:
+    if not xml_body and client_config.SCRIPT_ENDPOINT_URL:
         api_endpoint = client_config.SCRIPT_ENDPOINT_URL
         request_builder = RxRequest(url=api_endpoint, DEA=DEA, script_version=script_version)
         request = request_builder.build_request(patient_fname, patient_lname, patient_dob)
@@ -218,5 +221,7 @@ def patient_lookup_query(patient_fname, patient_lname, patient_dob, DEA, script_
 
         xml_body = response.text
 
+    if not xml_body:
+        raise NotFound()
     patient_bundle = parse_patient_lookup_query(xml_body, script_version)
     return patient_bundle
