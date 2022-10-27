@@ -24,6 +24,10 @@ def required_search_request_params(req, fhir_version, context):
     patient_dob = req.args.get('subject:Patient.birthdate', '').split('eq')[-1]
     DEA = req.args.get('DEA')
 
+    # in a demo deploy, SCRIPT_ENDPOINT_URL will be configured, but empty
+    if current_app.config.get("SCRIPT_ENDPOINT_URL") == "":
+        DEA = "FAKEDEA123"
+
     if not all((patient_fname, patient_lname, patient_dob, DEA)):
         current_app.logger.debug(
             "%s search attempted without all required parameters"
