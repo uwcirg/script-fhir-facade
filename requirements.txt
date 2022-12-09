@@ -1,4 +1,4 @@
-certifi==2021.5.30 # via requests
+certifi==2022.12.7 # via requests
 chardet==4.0.0 # via requests
 click==8.0.1 # via flask
 flask==2.0.1 # via script-facade (setup.py)
