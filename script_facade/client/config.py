@@ -9,7 +9,7 @@ class DefaultConfig(object):
     SCRIPT_VERSION = os.environ.get('SCRIPT_VERSION', '20170701')
 
     # SOAP endpoint URL
-    SCRIPT_ENDPOINT_URL = os.environ.get('SCRIPT_ENDPOINT_URL', 'https://uat-onehealthport-api.axwaycloud.com:8099/ncpdp_requests')
+    SCRIPT_ENDPOINT_URL = os.environ.get('SCRIPT_ENDPOINT_URL', 'https://uat-v2-onehealthport-api.axwaycloud.com:8099/ncpdp_requests')
     # link to repo of mock XML files
     SCRIPT_MOCK_URL = os.environ.get('SCRIPT_MOCK_URL')
 
