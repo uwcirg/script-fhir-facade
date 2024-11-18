@@ -19,9 +19,9 @@ def test_meds_bundle(rxhistory_response_20170701):
     )
     assert len(meds_bundle['entry']) == 10
 
-    assert meds_bundle['entry'][0]['medicationCodeableConcept']['text'] == 'TESTOSTERONE PROPIONATE POWDER'
-    assert meds_bundle['entry'][5]['medicationCodeableConcept']['text'] == 'FORTICAL 200 UNITS NASAL SPRAY'
-    assert meds_bundle['entry'][7]['medicationCodeableConcept']['text'] == 'DIAZEPAM 10 MG TABLET'
+    assert meds_bundle['entry'][0]['resource']['medicationCodeableConcept']['text'] == 'TESTOSTERONE PROPIONATE POWDER'
+    assert meds_bundle['entry'][5]['resource']['medicationCodeableConcept']['text'] == 'FORTICAL 200 UNITS NASAL SPRAY'
+    assert meds_bundle['entry'][7]['resource']['medicationCodeableConcept']['text'] == 'DIAZEPAM 10 MG TABLET'
 
 
 def test_script_20170701(rxhistory_response_20170701):
