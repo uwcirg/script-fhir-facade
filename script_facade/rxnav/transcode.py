@@ -18,7 +18,7 @@ def to_rxnorm(coding, rxnav_url):
         params=querystring_params,
     )
 
-    rxnorm_codes = response.json()['idGroup'].get('rxnormId', [])
+    rxnorm_codes = response.json().get('idGroup', {}).get('rxnormId', [])
     if not rxnorm_codes:
         return None
 
