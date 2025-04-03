@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Message StructuresVersion="20170715" ECLVersion="20170715" DatatypesVersion="20170715"
-TransactionDomain="SCRIPT" TransactionVersion="20170715" TransportVersion="20170715"
+<Message StructuresVersion="20170715" ECLVersion="20170715" DatatypesVersion="20170715" 
+TransactionDomain="SCRIPT" TransactionVersion="20170715" TransportVersion="20170715" 
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <Header>
         <To Qualifier="ZZZ">WA-OHP</To>
