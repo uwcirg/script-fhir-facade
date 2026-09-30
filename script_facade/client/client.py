@@ -5,7 +5,7 @@ from flask import current_app
 from lxml import etree as ET
 import requests_cache
 import requests
-from requests import Request, Session
+from requests import Request
 from werkzeug.exceptions import NotFound
 
 from script_facade.models.r1.bundle import as_bundle
@@ -13,6 +13,7 @@ from script_facade.models.r1.medication_order import MedicationOrder
 from script_facade.models.r4.medication_request import medication_request_factory, SCRIPT_NAMESPACE
 from script_facade.models.r1.patient import Patient
 from .config import DefaultConfig as client_config
+from .http import send_unpatched
 
 # data to configure Session
 session_data = {
@@ -178,15 +179,28 @@ def _mock_pdmp_xml(script_version, patient_fname, patient_lname, patient_dob):
 
 
 def _post_pdmp(patient_fname, patient_lname, patient_dob, DEA, script_version):
-    """POST an NCPDP SCRIPT request using the configured client certificate."""
+    """POST an NCPDP SCRIPT request.
+
+    Uses the OAuth bearer token when SCRIPT_JWT_ASSERTION is set, and the
+    client certificate otherwise. The POST itself does not use requests-cache.
+    """
+    from . import oauth
+
     request_builder = RxRequest(
         url=client_config.SCRIPT_ENDPOINT_URL,
         DEA=DEA,
         script_version=script_version,
     )
-    request = request_builder.build_request(patient_fname, patient_lname, patient_dob)
+    send_kwargs = {
+        'data': request_builder.request_body(patient_fname, patient_lname, patient_dob),
+        'headers': {'Content-Type': 'application/xml'},
+    }
+    if client_config.SCRIPT_JWT_ASSERTION:
+        send_kwargs['headers'] = oauth.pmp_headers()
+    else:
+        send_kwargs['cert'] = session_data['cert']
     try:
-        response = Session().send(request, **session_data)
+        response = send_unpatched('POST', request_builder.url, **send_kwargs)
     except OSError as e:
         current_app.logger.error("Missing PDMP certificates: %s", e)
         raise RuntimeError("Valid PDMP certificates not found")
