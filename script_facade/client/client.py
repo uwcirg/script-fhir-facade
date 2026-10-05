@@ -208,14 +208,14 @@ def _post_pdmp(patient_fname, patient_lname, patient_dob, DEA, script_version):
     return response.text
 
 
-def fetch_pdmp_response(patient_fname, patient_lname, patient_dob, DEA, script_version, log_mock_hit=False):
+def fetch_pdmp_response(patient_fname, patient_lname, patient_dob, DEA, script_version):
     """Load PDMP XML from the mock repo or the live endpoint.
 
     Returns the response body and the SCRIPT version actually used.
     """
     script_version = script_version or client_config.SCRIPT_VERSION
     xml_body = _mock_pdmp_xml(script_version, patient_fname, patient_lname, patient_dob)
-    if xml_body and log_mock_hit:
+    if xml_body:
         current_app.logger.debug(
             "found mocked PDMP response for (%s, %s)", patient_lname, patient_fname)
 
@@ -229,7 +229,7 @@ def fetch_pdmp_response(patient_fname, patient_lname, patient_dob, DEA, script_v
 
 def rx_history_query(patient_fname, patient_lname, patient_dob, DEA, fhir_version, script_version):
     xml_body, script_version = fetch_pdmp_response(
-        patient_fname, patient_lname, patient_dob, DEA, script_version, log_mock_hit=True)
+        patient_fname, patient_lname, patient_dob, DEA, script_version)
     return parse_rx_history_response(xml_body, fhir_version, script_version)
 
 
