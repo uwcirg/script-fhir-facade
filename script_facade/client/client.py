@@ -5,7 +5,7 @@ from flask import current_app
 from lxml import etree as ET
 import requests_cache
 import requests
-from requests import Request, Session
+from requests import Request
 from werkzeug.exceptions import NotFound
 
 from script_facade.models.r1.bundle import as_bundle
@@ -13,6 +13,7 @@ from script_facade.models.r1.medication_order import MedicationOrder
 from script_facade.models.r4.medication_request import medication_request_factory, SCRIPT_NAMESPACE
 from script_facade.models.r1.patient import Patient
 from .config import DefaultConfig as client_config
+from .http import send_unpatched
 
 # data to configure Session
 session_data = {
@@ -160,68 +161,79 @@ def parse_patient_lookup_query(xml_string, script_version):
     return as_bundle(patients, bundle_type='searchset')
 
 
-def rx_history_query(patient_fname, patient_lname, patient_dob, DEA, fhir_version, script_version):
-    # use default configured NCPDP SCRIPT version if none given
-    script_version = script_version or client_config.SCRIPT_VERSION
-
-    xml_body = None
+def _mock_pdmp_xml(script_version, patient_fname, patient_lname, patient_dob):
+    """Return fixture XML when SCRIPT_MOCK_URL matches, otherwise None."""
     mock_url = client_config.SCRIPT_MOCK_URL
-    if mock_url:
-        mock_base_url = mock_url.replace("github.com", "raw.githubusercontent.com")
-        full_url = f"{mock_base_url}/main/{script_version}/{patient_fname.lower()}-{patient_lname.lower()}-{patient_dob}.xml"
-        with requests_cache.disabled():
-            response = requests.get(full_url)
+    if not mock_url:
+        return None
+    mock_base_url = mock_url.replace("github.com", "raw.githubusercontent.com")
+    full_url = (
+        f"{mock_base_url}/main/{script_version}/"
+        f"{patient_fname.lower()}-{patient_lname.lower()}-{patient_dob}.xml"
+    )
+    with requests_cache.disabled():
+        response = requests.get(full_url)
+    if response.status_code != 200:
+        return None
+    return response.text
 
-        if response.status_code == 200:
-            xml_body = response.text
-            current_app.logger.debug("found mocked PDMP response for (%s, %s)", patient_lname, patient_fname)
+
+def _post_pdmp(patient_fname, patient_lname, patient_dob, DEA, script_version):
+    """POST an NCPDP SCRIPT request.
+
+    Uses the OAuth bearer token when SCRIPT_JWT_ASSERTION is set, and the
+    client certificate otherwise. The POST itself does not use requests-cache.
+    """
+    from . import oauth
+
+    request_builder = RxRequest(
+        url=client_config.SCRIPT_ENDPOINT_URL,
+        DEA=DEA,
+        script_version=script_version,
+    )
+    send_kwargs = {
+        'data': request_builder.request_body(patient_fname, patient_lname, patient_dob),
+        'headers': {'Content-Type': 'application/xml'},
+    }
+    if client_config.SCRIPT_JWT_ASSERTION:
+        send_kwargs['headers'] = oauth.pmp_headers()
+    else:
+        send_kwargs['cert'] = session_data['cert']
+    try:
+        response = send_unpatched('POST', request_builder.url, **send_kwargs)
+    except OSError as e:
+        current_app.logger.error("Missing PDMP certificates: %s", e)
+        raise RuntimeError("Valid PDMP certificates not found")
+    response.raise_for_status()
+    return response.text
+
+
+def fetch_pdmp_response(patient_fname, patient_lname, patient_dob, DEA, script_version):
+    """Load PDMP XML from the mock repo or the live endpoint.
+
+    Returns the response body and the SCRIPT version actually used.
+    """
+    script_version = script_version or client_config.SCRIPT_VERSION
+    xml_body = _mock_pdmp_xml(script_version, patient_fname, patient_lname, patient_dob)
+    if xml_body:
+        current_app.logger.debug(
+            "found mocked PDMP response for (%s, %s)", patient_lname, patient_fname)
 
     if not xml_body and client_config.SCRIPT_ENDPOINT_URL:
-        api_endpoint = client_config.SCRIPT_ENDPOINT_URL
-        request_builder = RxRequest(url=api_endpoint, DEA=DEA, script_version=script_version)
-        request = request_builder.build_request(patient_fname, patient_lname, patient_dob)
-        s = Session()
-        response = s.send(request, **session_data)
-        response.raise_for_status()
-
-        xml_body = response.text
+        xml_body = _post_pdmp(patient_fname, patient_lname, patient_dob, DEA, script_version)
 
     if not xml_body:
         raise NotFound()
-    meds = parse_rx_history_response(xml_body, fhir_version, script_version)
-    return meds
+    return xml_body, script_version
+
+
+def rx_history_query(patient_fname, patient_lname, patient_dob, DEA, fhir_version, script_version):
+    xml_body, script_version = fetch_pdmp_response(
+        patient_fname, patient_lname, patient_dob, DEA, script_version)
+    return parse_rx_history_response(xml_body, fhir_version, script_version)
 
 
 def patient_lookup_query(patient_fname, patient_lname, patient_dob, DEA, script_version, fhir_version):
-    # use default configured NCPDP SCRIPT version if none given
-    script_version = script_version or client_config.SCRIPT_VERSION
-
-    xml_body = None
-    mock_url = client_config.SCRIPT_MOCK_URL
-    if mock_url:
-        mock_base_url = mock_url.replace("github.com", "raw.githubusercontent.com")
-        full_url = f"{mock_base_url}/main/{script_version}/{patient_fname.lower()}-{patient_lname.lower()}-{patient_dob}.xml"
-        with requests_cache.disabled():
-            response = requests.get(full_url)
-
-        if response.status_code == 200:
-            xml_body = response.text
-
-    if not xml_body and client_config.SCRIPT_ENDPOINT_URL:
-        api_endpoint = client_config.SCRIPT_ENDPOINT_URL
-        request_builder = RxRequest(url=api_endpoint, DEA=DEA, script_version=script_version)
-        request = request_builder.build_request(patient_fname, patient_lname, patient_dob)
-        s = Session()
-        try:
-            response = s.send(request, **session_data)
-        except OSError as e:
-            current_app.logger.error("Missing PDMP certificates: %s", e)
-            raise RuntimeError("Valid PDMP certificates not found")
-        response.raise_for_status()
-
-        xml_body = response.text
-
-    if not xml_body:
-        raise NotFound()
-    patient_bundle = parse_patient_lookup_query(xml_body, script_version)
-    return patient_bundle
+    xml_body, script_version = fetch_pdmp_response(
+        patient_fname, patient_lname, patient_dob, DEA, script_version)
+    return parse_patient_lookup_query(xml_body, script_version)

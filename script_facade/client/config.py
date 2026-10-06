@@ -27,6 +27,17 @@ class DefaultConfig(object):
     # site-specific identifiers
     SCRIPT_FROM_QUALIFIER = os.environ.get('SCRIPT_FROM_QUALIFIER', '7uycso03')
     SCRIPT_TERTIARY_IDENTIFICATION = os.environ.get('SCRIPT_TERTIARY_IDENTIFICATION', 'tester1')
+
+    # OAuth 2.0 JWT bearer grant. Unset means client-certificate auth.
+    # Pre-issued JWT from OneHealthPort. Do not log this value.
+    SCRIPT_JWT_ASSERTION = os.environ.get('SCRIPT_JWT_ASSERTION')
+    SCRIPT_TOKEN_URL = os.environ.get(
+        'SCRIPT_TOKEN_URL',
+        'https://uat-v2-onehealthport-api.axwaycloud.com/ohp/oauth/jwt/token',
+    )
+    # x-org-facility-id. Defaults to the existing site identifier.
+    SCRIPT_ORG_FACILITY_ID = os.environ.get('SCRIPT_ORG_FACILITY_ID', SCRIPT_FROM_QUALIFIER)
+
     @classmethod
     def root_path(cls):
         return os.path.dirname(os.path.realpath(__file__))

@@ -16,6 +16,15 @@ Install HTTP client certificate and key
 
     cp pdmp.crt pdmp.key config/certs/
 
+The certificate path is used when `SCRIPT_JWT_ASSERTION` is unset. To use the
+OneHealthPort OAuth 2.0 JWT bearer grant instead, set `SCRIPT_JWT_ASSERTION` to
+the pre-issued JWT, point `SCRIPT_ENDPOINT_URL` at the gateway data URL (no
+port 8099), and set `SCRIPT_TOKEN_URL` if it is not the UAT token endpoint.
+`SCRIPT_ORG_FACILITY_ID` is sent as `x-org-facility-id` and defaults to
+`SCRIPT_FROM_QUALIFIER`. Access tokens are stored in Redis when
+`REQUEST_CACHE_URL` is set, with a TTL taken from the token response
+`expires_in`.
+
 Build the docker image. Should only be necessary on first run or if dependencies change.
 
     docker-compose build
